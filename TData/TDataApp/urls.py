@@ -3,5 +3,7 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
+    url(r'create/$', views.CreteRel, name="createRel"),
+    url(r'get_rel/$', views.GetRel, name="getRel"),
     url(r'', views.Home, name="homepage"),
 ]

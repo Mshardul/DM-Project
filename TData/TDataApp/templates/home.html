@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>DB Form</title>
+	<title>Relation Form</title>
 	
 	<script type="text/javascript" src="{% static "js/jquery-3.2.1.min.js" %}"></script>
 	<script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
@@ -18,11 +18,22 @@
 		<div class="row"> 
 			<div class="col-md-offset-2 col-md-8"  style="border: 5px solid gray">
 				<form>
+					{% csrf_token %}
 					<div class="form-group">
-						<label for="db_name">DB Name:</label>
+						<label for="db_name">DataBase Name:</label>
 						<input type="text" name="db_name" class="form-control" id="db_name">
+						<br>
+						<input type="button" class="btn btn-default" onClick="GetRel(1, 1)" value="Get Relations" style="float: right">
 					</div>
-					<div id="addColDiv">
+					<hr>
+					<div class="form-group">
+						<label for="rel_name">Relation Name:</label>
+						<input type="text" name="rel_name" class="form-control" id="rel_name">
+						<br>
+						<input type="button" class="btn btn-default" onClick="CheckRel(1, 1)" value="Check Availability" style="float: right">
+					</div>
+					<hr>
+					<div id="addAttrDiv">
 						<table class="table">
 							<thead>
 								<tr>
@@ -31,24 +42,24 @@
 									<th>Attribute Type</th>
 								</tr>
 							</thead>
-							<tbody id="db_table"></tbody>
+							<tbody id="rel_table"></tbody>
 						</table>
 					</div>
 					<hr>
 					<div class="row">
 						<div class="col-md-6">
-							<div id="addColBtn">
+							<div id="addAttrBtn">
 								<span class="icon-input-btn">
 									<!-- <span class="glyphicon glyphicon-plus"></span> -->
-									<input type="button" class="btn btn-default" onclick="AddCol()" value="Add Column">
+									<input type="button" class="btn btn-default" onclick="AddAttr()" value="Add Attribute">
 								</span>
 							</div>
 						</div>
 						<div class="col-md-6">
-							<div id="addColBtn" style="float:right">
+							<div id="addAttrBtn" style="float:right">
 								<span class="icon-input-btn">
 									<!-- <span class="glyphicon glyphicon-check"></span> -->
-									<input type="button" class="btn btn-primary" onclick="AddDb()" value="Submit">
+									<input type="button" class="btn btn-primary" onclick="AddRel()" value="Submit">
 								</span>
 							</div>
 						</div>
@@ -60,21 +71,101 @@
 	</body>
 	<script type="text/javascript">
 		var dataTypes = ['int', 'string'];
+		var dbName="";
+		var relName="";
+		
 		$(document).ready(function(){
-			$('#db_table').hide();
-			// GetDataTypes(); //getdatatypes from ajax, here;
+			$('#rel_table').hide();
+			// $.ajax({
+			// 	type:"POST",
+			// 	url:"get_data_types",
+			// 	success:function(response){
+			// 		dataTypes=JSON.parse(response);
+			// 	}
+			// })
 		})
-		function AddCol(){
-			$('#db_table').show();
-			// var check = "<td><input type='checkbox' name='temporal' value='0'>"
-			var name = '<td><input type="text" class="colName"></td>';
-
-			// var type = "<td><div class='dropdown'><button class='btn btn-default dropdown-toggle' type='button' id='dropdownMenu1' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'>Data Type <span class='caret'></span></button><ul class='dropdown-menu aria-labelledby='dropdownMenu1'>";
-
-			// for(var dt in dataTypes){
-			// 	type += "<li><a href='#'>"+dataTypes[dt]+"</a></li>";
+		
+		function UpdateDBName(){
+			dbName = $('#db_name').val();
+		}
+		
+		function UpdateRelName(){
+			relName = $('#rel_name').val();
+		}
+		
+		function EmptyDBError(){
+			UpdateDBName();
+			if(dbName==""){
+				swal('', 'Please Insert DB Name', 'error');
+				return 0;
+			}
+			return 1;
+		}
+		
+		function EmptyRelError(){
+			UpdateRelName();
+			if(relName==""){
+				swal('', 'Please Insert Relation Name', 'error');
+				return 0;
+			}
+			return 1;
+		}
+		
+		function Display(response){
+			alert(response);
+		}
+		
+		function GetRel(dispSwal, dispResp){
+			if(EmptyDBError()==0)
+				return 0;
+			$.ajax({
+				type:'POST',
+				url: "get_rel/",
+				data:{'dbName': JSON.stringify(dbName)},
+				async: false,
+				success:function(response){
+					console.log(response, typeof(response));
+					if(response=="" || response==undefined || response==null){
+						if(dispSwal==1){
+							swal('', 'Database does not exist', 'error');
+						}
+						return(-1);
+					}
+					else{
+						if(dispResp==1)
+							Display(response);
+						console.log(response);
+						return response;
+					}
+				},
+				error:function(err){
+					swal('something went wrong', 'Cant get to respective Database', 'error');
+				}
+			})
+		}
+		
+		function CheckRel(dispDBSwal, dispRelSwal){
+			var response = GetRel(dispDBSwal, 0); //ajax is asyncd even after async set false
+			console.log(response, typeof(response));
+			if(response==0 || response==-1)
+				return response;
+			if(EmptyRelError()==0)
+				return 0;
+			console.log(response, typeof(response));
+			// if(response.includes(relName)){
+			// 	swal('', 'Relation already exists', 'error');
+			// 	return 0;
 			// }
-			// type += "</ul></div>";
+			// else if(dispRelSwal==1){
+			// 	swal('', 'Relation does not exist', 'success')
+			// }
+			return 1;
+		}
+	
+		function AddAttr(){
+			$('#rel_table').show();
+
+			var name = '<td><input type="text" class="colName"></td>';
 
 			var type = '<td><select class="form-group colType">';
 			for(var i=0; i<dataTypes.length; i++){
@@ -83,28 +174,60 @@
 			type += '</select></td>';
 			console.log(type);
 
-			$('#db_table').append("<tr>"+name+type+"</tr>");
+			$('#rel_table').append("<tr>"+name+type+"</tr>");
 		}
 
-		function AddDb(){
-			var dbName = $('#db_name').val();
-			// alert(dbName);
-			if(dbName==''){
-				swal('', 'Please Insert DB Name', 'error');
-				return;
-			}
-
-			var data=[];
-			$('#db_table tr').each(function(){
-				var attrName = $(this).find(".colName").val();
-				var attrType = $(this).find(".colType").val();
-				data.push({name: attrName, type: attrType});
-				// data[attrName]=attrType;
+		function AddRel(){
+			
+			EmptyDBError();
+			EmptyRelError();
+			
+			var resp = CheckRel(0, 0);
+			if(resp==0) //for empry fields, error, relations already exists
+				return 0;
+			//else
+				//resp==-1: db doesnot exist;
+				//resp==1: relation not in db
+				
+			var table_data={};
+			$('#rel_table tr').each(function(){
+				var attrName = ($(this).find(".colName").val()).toString();
+				var attrType = ($(this).find(".colType").val()).toString();
+				if(attrName!="")
+					table_data[attrName] = attrType;
 			})
 
+			data={};
+			data.dbName = dbName;
+			data.relName = relName;
+			data.attributes = table_data;
 			console.log(data);
 
-			// ajax request to send data to backend
+			$.ajax({
+				type:"POST",
+				url:"create/",
+				// contentType: "application/json",
+				data:{
+					'data': JSON.stringify(data)
+				},
+				async: false,
+				// dataType:'text',
+				success:function(response){
+					console.log(response, typeof(response));
+					// if(response==1){
+					// 	swal('', 'Relation created successfully', 'success');
+					// }
+					// else if(response==-1){
+					// 	swal('Duplicate Detected', 'Did you use the same name for Relation again!!?', 'error');
+					// }
+					// else if(response==0){
+					// 	swal('Something went wrong', '', 'error');
+					// }
+					// else{
+					// 	swal('Something went wrong', 'And we have no idea, what it is', 'error');
+					// }
+				}
+			})
 		}
 	</script>
 </html>

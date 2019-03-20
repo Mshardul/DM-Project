@@ -19,5 +19,5 @@ from TDataApp import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-	url(r'', include('TDataApp.urls')),
+	url(r'^app/', include('TDataApp.urls')),
 ]
