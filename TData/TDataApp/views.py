@@ -26,16 +26,16 @@ def CreteRel(request):
 	relName = data['relName']
 	attributes={}
 	for i in data['attributes']:
-		attributes[str(i)]=str(data['attributes'][i])
+		attributes[str(i)]=str(data['attributes'][i]) #{'attr1': 'type1'}
 	
 	print(dbName)
 	print(relName)
 	print(attributes)
 	
-	helper.AddRel(dbName, relName, attributes)
+	resp = helper.AddRel(dbName, relName, attributes)
 	
 	print("="*20)
-	return HttpResponse(1);
+	return HttpResponse(resp);
 	
 
 @csrf_exempt
@@ -43,7 +43,7 @@ def GetRel(request):
 	print("="*20)
 	# print(request.POST)
 	
-	dbName = str(request.POST['dbName'])
+	dbName = json.loads(request.POST['dbName'])
 	print dbName
 	rels = helper.GetRels(dbName)
 	print rels
@@ -54,4 +54,16 @@ def GetRel(request):
 	else:
 		print("sending list of relations")
 		return HttpResponse(rels)
+
+@csrf_exempt
+def CheckRel(request):
+	dbName = json.loads(request.POST['dbName'])
+	relName = json.loads(request.POST['relName'])
+	db_id, rel_id = helper.UniqueRel(dbName, relName)
+	if(db_id==0):
+		return HttpResponse("-1")
+	elif(rel_id==0):
+		return HttpResponse("1")
+	else:
+		return HttpResponse("0")
 	
