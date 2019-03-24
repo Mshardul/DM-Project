@@ -98,11 +98,12 @@ def CreateDBTAttributeModel(dbName, relName, attributes):
     dbId, rId = CreateDBTablesModel(dbName, relName)
     if(rId==0):
         return -1
-    attrs_list=attributes.keys()
+    # attrs_list=attributes.keys()
     i=1 #starts from 1, as we are not giving 'add column later' option
     relObj = GetRelObject(dbId, rId)
-    for attr in attrs_list:
-        dbtaObj = models.DBTAttribute(r_id=relObj, a_id=i, a_name=attr, a_type=int(attributes[attr]), is_temp=False)
+    # for attr in attrs_list:
+    for attr in attributes:
+        dbtaObj = models.DBTAttribute(r_id=relObj, a_id=i, a_name=attr[1], a_type=attr[2], is_temp=attr[0])
         dbtaObj.save()
         i+=1
     return 1
@@ -114,3 +115,11 @@ def AddRel(dbName, relName, attributes):
         return CreateDBTAttributeModel(dbName, relName, attributes)
     except:
         return 0
+        
+def GetAllDB():
+    dbs = models.Database.objects.all()
+    dbList=[]
+    for db in dbs:
+        dbList.append(db.db_name)
+    print(dbList)
+    return dbList

@@ -10,11 +10,22 @@ from . import helper
 
 import json
 import pprint
+
 # Create your views here.
-def Home(request):
-	# return HttpResponse("Hi!!!")
-	return render_to_response('home.html')
+
+def Base(request):
+	return render_to_response('base.html')
 	
+def Home(request):
+	return render_to_response('home.html')
+
+def Create(request):
+	return render_to_response('create.html')
+	
+def Retrieve(request):
+	return render_to_response('retrieve.html')
+	
+
 # @csrf_protect
 @csrf_exempt
 def CreteRel(request):
@@ -24,9 +35,12 @@ def CreteRel(request):
 	# print(data)
 	dbName = data['dbName']
 	relName = data['relName']
-	attributes={}
-	for i in data['attributes']:
-		attributes[str(i)]=str(data['attributes'][i]) #{'attr1': 'type1'}
+	attributes = data['attributes']
+	
+	for attr in attributes: #[bool isTemp, string attrName, int attrType]
+		attr[0] = True if int(attr[0])==1 else False
+		attr[1] = str(attr[1])
+		attr[2] = int(attr[2])
 	
 	print(dbName)
 	print(relName)
@@ -41,7 +55,6 @@ def CreteRel(request):
 @csrf_exempt
 def GetRel(request):
 	print("="*20)
-	# print(request.POST)
 	
 	dbName = json.loads(request.POST['dbName'])
 	print dbName
@@ -67,3 +80,11 @@ def CheckRel(request):
 	else:
 		return HttpResponse("0")
 	
+def DisplayAllDB(request):
+	pass
+
+@csrf_exempt
+def GetDB(request):
+	dbList = helper.GetAllDB()
+	print(dbList)
+	return HttpResponse(dbList)

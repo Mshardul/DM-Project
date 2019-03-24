@@ -1,0 +1,48 @@
+{% load static %}
+{# this is the base file. add header and footer here #}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block pageTitle%} {% endblock %}</title>
+  <script type="text/javascript" src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/sweetalert.min.js" %}"></script>
+
+  <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
+
+  <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}">
+  
+</head>
+
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Temporal Data Storage</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">&gt</a></li>
+        <li><a href="/abstract/">Abstract</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Operations
+          <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/app/create/">Create</a></li>
+            <li><a href="/app/retrieve/">Retrieve</a></li>
+            <li><a href="/app/update/">Update</a></li>
+            <li><a href="/app/delete/">Delete</a></li>
+          </ul>
+        </li>
+        <li><a href="/showAll">Show All</a></li>
+        <li><a href="/developers">Developers</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div id="pageContent">
+    {% block pageContent %} {% endblock %}
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+  {% block pageTitle %}Retrieve Operation{% endblock %}
+
+  {% block pageContent %}
+  
+  <script type="text/javascript" src="{% static "js/retrieve.js" %}"></script>
+  <br>
+  <div class="row">
+    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+      {% csrf_token %}
+      <br>
+      <div class="form-group">
+        <label for="db_name">Select DataBase:</label>
+        <select class="form-control" id="select_db"></select>
+        <br>
+        <input type="button" class="btn btn-default" onClick="GetRel()" value="Go" style="float: right">
+      </div>
+      <hr>
+      <div class="form-group" id="firstRel">
+        <label for="select rel">Select Relation</label>
+        <select class="form-control" id="select_rel"></select>
+        <br>
+        <input type="button" class="btn btn-default" onClick="AddRel()" value="Join" style="float: right">
+      <div>
+      <div id="joinRelDiv"></div>
+        
+      <hr>
+    </div>
+  </div>
+  {% endblock %}
+</html>

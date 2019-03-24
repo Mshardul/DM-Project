@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+  {% block pageTitle %}Create Operation{% endblock %}
+  
+  {% block pageContent %}
+    <script type="text/javascript" src="{% static "js/create.js" %}"></script>
+    <br>
+    <div class="row">
+      <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+        <form>
+          {% csrf_token %}
+  				<br>
+          <div class="form-group">
+            <label for="db_name">DataBase Name:</label>
+            <input type="text" name="db_name" class="form-control" id="db_name">
+            <br>
+            <input type="button" class="btn btn-default" onClick="GetRel()" value="Get Relations" style="float: right">
+          </div>
+          <hr>
+          <div class="form-group">
+            <label for="rel_name">Relation Name:</label>
+            <input type="text" name="rel_name" class="form-control" id="rel_name">
+            <br>
+            <input type="button" class="btn btn-default" onClick="CheckRel()" value="Check Availability" style="float: right">
+          </div>
+          <hr>
+          <div id="addAttrDiv">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Temporal Attribute</th>
+                  <th>Attribute Name</th>
+                  <th>Attribute Type</th>
+                </tr>
+              </thead>
+              <tbody id="rel_table"></tbody>
+            </table>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <div id="addAttrBtn">
+                <span class="icon-input-btn">
+                  <!-- <span class="glyphicon glyphicon-plus"></span> -->
+                  <input type="button" class="btn btn-default" onclick="AddAttr()" value="Add Attribute">
+                </span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div id="addAttrBtn" style="float:right">
+                <span class="icon-input-btn">
+                  <!-- <span class="glyphicon glyphicon-check"></span> -->
+                  <input type="button" class="btn btn-primary" onclick="AddRel()" value="Submit">
+                </span>
+              </div>
+            </div>
+          </div>
+          <br>
+        </form>
+      </div>
+    </div>
+  {% endblock %}
+
+</html>
