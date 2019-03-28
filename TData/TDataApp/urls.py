@@ -3,9 +3,9 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
-    url(r'create_rel/$', views.CreteRel, name="createRel"),
+    url(r'create_rel/$', views.CreateRel, name="createRel"),
     url(r'get_rel/$', views.GetRel, name="getRel"),
-    url(r'check_duplicate/$', views.CheckRel, name="checkDuplicateRel"),
+    # url(r'check_duplicate/$', views.CheckRel, name="checkDuplicateRel"), #not required as of now
     url(r'get_db/$', views.GetDB, name="GetDBs"),
     
     url(r'base/$', views.Base, name="base"),

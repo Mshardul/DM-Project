@@ -1,7 +1,8 @@
+// relName not required as of now
 
 var dataTypes = ['int', 'string'];
 var dbName = "";
-var relName = "";
+// var relName = "";
 var table_data = [];
 
 $(document).ready(function() {
@@ -19,19 +20,20 @@ $(document).ready(function() {
 function EmptyAll(){
   $('#rel_table').hide();
   $('#db_name').val('');
-  $('#rel_name').val('');
+  // $('#rel_name').val('');
   $('#rel_table').html('');
 }
 function UpdateDBName() {
   dbName = $('#db_name').val();
 }
 
-function UpdateRelName() {
-  relName = $('#rel_name').val();
-}
+// function UpdateRelName() {
+//   relName = $('#rel_name').val();
+// }
 
 function EmptyDBError() {
   UpdateDBName();
+  console.log(dbName);
   if (dbName == "") {
     swal('', 'Please Insert DB Name', 'error');
     return 0;
@@ -39,16 +41,16 @@ function EmptyDBError() {
   return 1;
 }
 
-function EmptyRelError() {
-  if (EmptyDBError() == 0)
-    return 0;
-  UpdateRelName();
-  if (relName == "") {
-    swal('', 'Please Insert Relation Name', 'error');
-    return 0;
-  }
-  return 1;
-}
+// function EmptyRelError() {
+//   if (EmptyDBError() == 0)
+//     return 0;
+//   UpdateRelName();
+//   if (relName == "") {
+//     swal('', 'Please Insert Relation Name', 'error');
+//     return 0;
+//   }
+//   return 1;
+// }
 
 function Display(response) {
   alert(response);
@@ -81,36 +83,36 @@ function GetRel() {
   })
 }
 
-function CheckRel() {
-  if (EmptyRelError() == 0)
-    return 0;
-  $.ajax({
-    type: 'POST',
-    url: 'check_duplicate/',
-    data: {
-      'dbName': JSON.stringify(dbName),
-      'relName': JSON.stringify(relName)
-    },
-    async: false,
-    success: function(response) {
-      console.log(response, typeof(response));
-      if (response == '-1') {
-        swal('Wait!!', 'Even the db does not exist.\nBut we can create it for you.', 'error');
-      } else if (response == '0') {
-        swal('Wait!!', 'Relation already exists in the db.', 'error');
-      } else if (response == '1') {
-        swal('Go Ahead.', 'No such relation exists in the db.', 'success');
-      } else {
-        swal('Something went wrong.', 'We will get back to you later.', 'error');
-      }
-      return response;
-    },
-    error: function(response) {
-      swal('Something went wrong.', 'We will get back to you later', 'error');
-      return 0;
-    },
-  })
-}
+// function CheckRel() {
+//   if (EmptyRelError() == 0)
+//     return 0;
+//   $.ajax({
+//     type: 'POST',
+//     url: 'check_duplicate/',
+//     data: {
+//       'dbName': JSON.stringify(dbName),
+//       'relName': JSON.stringify(relName)
+//     },
+//     async: false,
+//     success: function(response) {
+//       console.log(response, typeof(response));
+//       if (response == '-1') {
+//         swal('Wait!!', 'Even the db does not exist.\nBut we can create it for you.', 'error');
+//       } else if (response == '0') {
+//         swal('Wait!!', 'Relation already exists in the db.', 'error');
+//       } else if (response == '1') {
+//         swal('Go Ahead.', 'No such relation exists in the db.', 'success');
+//       } else {
+//         swal('Something went wrong.', 'We will get back to you later.', 'error');
+//       }
+//       return response;
+//     },
+//     error: function(response) {
+//       swal('Something went wrong.', 'We will get back to you later', 'error');
+//       return 0;
+//     },
+//   })
+// }
 
 function AddAttr() {
   $('#rel_table').show();
@@ -123,15 +125,18 @@ function AddAttr() {
     type += '<option value="' + i + '">' + dataTypes[i] + '</option>';
   }
   type += '</select></td>';
-  console.log(type);
 
   $('#rel_table').append("<tr>" + checkBox + name + type + "</tr>");
 }
 
 function AddRel() {
-  if (EmptyRelError() == 0)
+  // if (EmptyRelError() == 0)
+    // return 0;
+  alert("in addrel()");
+  if(EmptyDBError()==0)
     return 0;
   
+  console.log(dbName);
   table_data=[];
   $('#rel_table tr').each(function() {
     var isTemp = ($(this).find(".temp:checked").val());
@@ -147,13 +152,13 @@ function AddRel() {
   
   console.log(table_data);
   if(table_data.length==0){
-    swal('', 'Table schema cant be empty', 'error');
+    swal('', 'Schema cant be empty', 'error');
     return;
   }
   
   data = {};
   data.dbName = dbName;
-  data.relName = relName;
+  // data.relName = relName;
   data.attributes = table_data;
   console.log(data);
 
@@ -171,7 +176,7 @@ function AddRel() {
       if (response == "1") {
         swal('Done', 'Table created.', 'success');
       } else if (response == "-1") {
-        swal('Duplication detected', 'Are you testing our code??', 'error');
+        swal('Duplication detected', 'One or more of the attributes already exists', 'error');
       } else {
         swal('Something went wrong', 'we will get back to you later', 'error');
       }

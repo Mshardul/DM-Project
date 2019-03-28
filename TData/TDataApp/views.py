@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 
 from . import helper
+import createOp
 
 import json
 import pprint
@@ -28,13 +29,13 @@ def Retrieve(request):
 
 # @csrf_protect
 @csrf_exempt
-def CreteRel(request):
+def CreateRel(request):
 	print("="*20)
 	
 	data=json.loads(request.POST['data'])
-	# print(data)
+	print(data)
 	dbName = data['dbName']
-	relName = data['relName']
+	# relName = data['relName'] #not required as of now
 	attributes = data['attributes']
 	
 	for attr in attributes: #[bool isTemp, string attrName, int attrType]
@@ -43,10 +44,10 @@ def CreteRel(request):
 		attr[2] = int(attr[2])
 	
 	print(dbName)
-	print(relName)
+	# print(relName)
 	print(attributes)
 	
-	resp = helper.AddRel(dbName, relName, attributes)
+	resp = createOp.Main(dbName, attributes) #relName #not required as of now
 	
 	print("="*20)
 	return HttpResponse(resp);

@@ -1,12 +1,8 @@
 import models
+import datetime
 from django.db.models import Max
 from django.core.exceptions import ObjectDoesNotExist
 
-'''
-    return type of every method is added as its first multi-line comment.
-    parameters accepted, are clear from their name.
-'''
-    
 def UniqueDB(dbName):
     ''' {0: db does not exist; db_id: otherwise} '''
     print('checking if db exists')
@@ -16,40 +12,14 @@ def UniqueDB(dbName):
         return db.first().db_id
     print("no db")
     return 0
-
-def UniqueRel(dbName, relName):
-    ''' {(0, 0): db does not exist; (1, 0): rel does not exist; (db_id, rel_id): otherwise} '''
-    print('checking if relation exists in the dbName given')
-    dbId = UniqueDB(dbName)
-    if dbId==0:
-        print("DB does not exist")
-        return (0, 0)
-    rel = models.DBTables.objects.filter(db_id=dbId, r_name=relName)
-    if rel.exists():
-        print("rel exists")
-        return (dbId, rel.first().r_id)
-    print("rel does not exist")
-    return (1, 0)
     
-def UniqueRelUsingDBId(dbId, relName):
+def UniqueRel(dbId, relName):
     ''' {0: rel does not exist; rel_id: otherwise} '''
     print('checking if relation exists in the dbId given')
-    rel = models.DBTables.objects.filter(db_id=dbId, r_name=relName)
+    rel = models.DBTable.objects.filter(db_id=dbId, r_name=relName)
     if rel.exists():
         return (rel.first().r_id)
     return 0
-    
-def GetRels(dbName):
-    ''' {0: db does not exists; list_of_rels_in_the_db: otherwise} '''
-    print('getting all the relations in the db')
-    dbId = UniqueDB(dbName)
-    if(dbId==0):
-        return 0
-    rel = models.DBTables.objects.filter(db_id=dbId).all()
-    rels=[]
-    for r in rel:
-        rels.append(r.r_name)
-    return rels
 
 def GetDBObject(dbId):
     ''' {db object} //useful for fk references '''
@@ -57,69 +27,114 @@ def GetDBObject(dbId):
     obj = models.Database.objects.filter(db_id=dbId).first()
     return obj
 
-def GetRelObject(dbId, relId):
+def GetRelObject(rId):
     ''' {rel object} //useful for fk references '''
     print("getting rel objects")
-    obj = models.DBTables.objects.filter(db_id=dbId, r_id=relId).first()
+    obj = models.DBTable.objects.filter(r_id=rId).first()
     return obj
     
 def CreateDatabaseModel(dbName):
-    ''' {db_id} //creates db, if does not exist '''
-    print('creating db')
+    print("creating db model")
     dbId = UniqueDB(dbName)
-    if(dbId!=0): #a db with the same name, already exists
+    if(dbId!=0):
         return dbId
-    else:
-        dbId = models.Database.objects.all().aggregate(Max('db_id'))['db_id__max']
+    dbId = models.Database.objects.all().aggregate(Max('db_id'))['db_id__max']
     if(dbId==None):
         dbId=0
     dbId+=1
     dbObj = models.Database(db_id=dbId, db_name=dbName)
     dbObj.save()
+    print("created db model")
     return dbId
-    
-def CreateDBTablesModel(dbName, relName):
-    ''' {(db_id, 0): if rel does not exist; (db_id, rel_id): otherwise} '''
-    print('creating relation in given dbName')
-    dbId = CreateDatabaseModel(dbName)
-    if(UniqueRelUsingDBId(dbId, relName)!=0):
-        return (dbId, 0)
-    rId = models.DBTables.objects.all().aggregate(Max('r_id'))['r_id__max']
+
+def GetRelId(dbId, relName):
+    rel = models.DBTable.objects.filter(db_id=dbId, r_name=relName)
+    if(rel.exists()):
+        return rel.first().r_id
+    else:
+        return 0
+
+def GetNextRId():
+    rId = models.DBTable.objects.all().aggregate(Max('r_id'))['r_id__max']
     if(rId==None):
         rId=0
     rId+=1
-    dbObj = GetDBObject(dbId)
-    dbtObj = models.DBTables(db_id=dbObj, r_id=rId, r_name=relName)
-    dbtObj.save()
-    return (dbId, rId)
+    return rId
     
-def CreateDBTAttributeModel(dbName, relName, attributes):
-    ''' {-1: rel duplication; 1: otherwise} '''
-    dbId, rId = CreateDBTablesModel(dbName, relName)
+def GetIdOfNonTempRel(dbId):
+    print("getting id of non temporal row")
+    rId = GetRelId(dbId, "non_temporal")
     if(rId==0):
-        return -1
-    # attrs_list=attributes.keys()
-    i=1 #starts from 1, as we are not giving 'add column later' option
-    relObj = GetRelObject(dbId, rId)
-    # for attr in attrs_list:
+        rId = GetNextRId()
+        CreateNonTempRel(dbId, rId)
+    return rId
+
+def CreateNonTempRel(dbId, rId):
+    print("creating non temporal row")
+    dbObj = GetDBObject(dbId)
+    rObj = models.DBTable(db_id=dbObj, r_id=rId, r_name="non_temporal")
+    rObj.save()
+    
+def DuplicateNonTempAttr(dbObj, rObj, aName):
+    attr = models.DBTAttribute.objects.filter(r_id=rObj, a_name=aName)
+    if(attr.exists()):
+        return 1
+    return 0
+    
+def DuplicateTempRel(dbObj, rName):
+    rel = models.DBTable.objects.filter(db_id=dbObj, r_name=rName)
+    if(rel.exists()):
+        return 1
+    return 0
+    
+def DuplicateAttr(dbObj, rObj, attributes):
+    print("checking for duplicacy")
     for attr in attributes:
-        dbtaObj = models.DBTAttribute(r_id=relObj, a_id=i, a_name=attr[1], a_type=attr[2], is_temp=attr[0])
-        dbtaObj.save()
-        i+=1
+        if(attr[0]==False):
+            if(DuplicateNonTempAttr(dbObj, rObj, attr[1])==1):
+                print("duplicacy found with ", attr[1])
+                return 1
+        else:
+            if(DuplicateTempRel(dbObj, attr[1])==1):
+                print("duplicacy found with ", attr[1])
+                return 1
+    print("no duplicacy found")
+    return 0
+
+def GetNextAId():
+    aId = models.DBTAttribute.objects.all().aggregate(Max('a_id'))['a_id__max']
+    if(aId==None):
+        aId=0
+    aId+=1
+    return aId
+    
+def AddAttrToNonTemp(rObj, attr):
+    print("Adding non temp attribute ", attr[1])
+    aId = GetNextAId()
+    dbtaObj = models.DBTAttribute(r_id=rObj, a_id=aId, a_name=attr[1], a_type=attr[2], is_temp=attr[0])
+    dbtaObj.save()
     return 1
     
-def AddRel(dbName, relName, attributes):
-    ''' {-1: rel duplication; 1: success, 0: exception}'''
-    try:
-        print('adding entries to all the db tables')
-        return CreateDBTAttributeModel(dbName, relName, attributes)
-    except:
-        return 0
-        
-def GetAllDB():
-    dbs = models.Database.objects.all()
-    dbList=[]
-    for db in dbs:
-        dbList.append(db.db_name)
-    print(dbList)
-    return dbList
+def AddAttrToTemp(rObj, aName, aType):
+    print("Adding attributes to temporal rel")
+    aId = GetNextAId()
+    dbtaObj1 = models.DBTAttribute(r_id=rObj, a_id=aId, a_name="startDate", a_type="1", is_temp=True)
+    dbtaObj2 = models.DBTAttribute(r_id=rObj, a_id=aId+1, a_name=aName, a_type=aType, is_temp=True)
+    dbtaObj3 = models.DBTAttribute(r_id=rObj, a_id=aId+2, a_name="endDate", a_type="1", is_temp=True)
+    dbtaObj1.save()
+    dbtaObj2.save()
+    dbtaObj3.save()
+    return 1
+    
+def AddTempRel(dbObj, attr):
+    print("Adding temporal relation ", attr[1])
+    rId = GetNextRId()
+    dbtObj = models.DBTable(db_id=dbObj, r_id=rId, r_name=attr[1])
+    dbtObj.save()
+    rObj = GetRelObject(rId)
+    AddAttrToTemp(rObj, attr[1], attr[2])
+    
+# def CreateNonTempTable(dbObj, nonTempAttr):
+#     nonTempTable = models(nonTempAttr, models.Model,),{
+# 
+#     }
