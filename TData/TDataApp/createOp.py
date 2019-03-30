@@ -1,4 +1,5 @@
 import helper
+import dbAccess
 
 def Main(dbName, attributes):
     dbId = helper.CreateDatabaseModel(dbName) #create db if not exists; return dbId
@@ -19,9 +20,9 @@ def Main(dbName, attributes):
             print("got temporal attr", attr[1])
             helper.AddTempRel(dbObj, attr)
             
-    # CreateNonTempTable(dbObj, nonTempAttr)
+    dbAccess.CreateNonTempTable(dbName, nonTempAttr)
     # 
-    # for attr in nonTempAttr:
-    #     CreateTempTables(dbObj, attr)
+    for attr in nonTempAttr:
+        dbAccess.CreateTempTable(dbName, attr)
     
-    return 1    
+    return 1

@@ -132,7 +132,6 @@ function AddAttr() {
 function AddRel() {
   // if (EmptyRelError() == 0)
     // return 0;
-  alert("in addrel()");
   if(EmptyDBError()==0)
     return 0;
   

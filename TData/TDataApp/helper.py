@@ -118,12 +118,8 @@ def AddAttrToNonTemp(rObj, attr):
 def AddAttrToTemp(rObj, aName, aType):
     print("Adding attributes to temporal rel")
     aId = GetNextAId()
-    dbtaObj1 = models.DBTAttribute(r_id=rObj, a_id=aId, a_name="startDate", a_type="1", is_temp=True)
-    dbtaObj2 = models.DBTAttribute(r_id=rObj, a_id=aId+1, a_name=aName, a_type=aType, is_temp=True)
-    dbtaObj3 = models.DBTAttribute(r_id=rObj, a_id=aId+2, a_name="endDate", a_type="1", is_temp=True)
-    dbtaObj1.save()
-    dbtaObj2.save()
-    dbtaObj3.save()
+    dbtaObj = models.DBTAttribute(r_id=rObj, a_id=aId, a_name=aName, a_type=aType, is_temp=True)
+    dbtaObj.save()
     return 1
     
 def AddTempRel(dbObj, attr):

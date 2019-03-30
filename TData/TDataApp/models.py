@@ -7,6 +7,7 @@ from django.db import models
 class DataTypes(models.Model):
 	dt_id = models.IntegerField(primary_key=True)
 	dt_name = models.CharField(max_length=20, null=False)
+	dt_sql = models.CharField(max_length=20, null=False)
 	
 class Database(models.Model):
 	db_id = models.IntegerField(primary_key=True)
