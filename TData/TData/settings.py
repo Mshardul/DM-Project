@@ -84,14 +84,15 @@ DATABASES = {
 }
 
 # DATABASES = {
-#     'default': 
-#          {
-#           'ENGINE': 'django.db.backends.mysql',
-#           'NAME': 'db.mysql',
-#           'USER': 'root',
-#           'PASSWORD':'root'
-#           }
-#    }
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'projectDB',
+#         'USER': 'root',
+#         'PASSWORD': 'root',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -130,3 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# uploaded files
+MEDIA_URL = '/db_files/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'db_files')

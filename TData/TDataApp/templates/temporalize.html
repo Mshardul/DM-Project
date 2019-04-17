@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+  {% block pageTitle %}Create Operation{% endblock %}
+  
+  {% block pageContent %}
+  <script type="text/javascript" src="{% static "js/temporalize.js" %}"></script>
+  
+  <div class="row">
+    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+      <form>
+        {% csrf_token %}
+        <br>
+        <div class="form-group" id="dbDiv">
+          <label for="db_name">Select DataBase:</label>
+          <select class="form-control" id="select_db"></select>
+          <br>
+        </div>
+        <hr>
+        <div class="form-group" id="relDiv">
+          <label for="select rel">Select Relation</label>
+          <select class="form-control" id="select_rel"></select>
+          <br>
+        </div>
+        <hr>
+        <div class="form-group" id="attrTableDiv">
+          <table class="table" style="border: 5px solid grey" id="attributesTable">
+            <thead>
+              <tr>
+                <td>Make Temporal
+                <td>Attribute Name</td>
+                <td>Attribute Type</td>
+              </tr>
+            </thead>
+            <tbody id="addAttr"></tbody>
+          </table>
+          <br>
+          <input type="button" value="Temporalize" style="float:right" onClick="Temporalize()">
+        </div>
+        <br>
+        <br>
+      </form>
+    </div>
+  </div>
+  
+  {% endblock %}
+
+</html>

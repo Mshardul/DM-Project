@@ -20,4 +20,4 @@ from TDataApp import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 	url(r'^app/', include('TDataApp.urls')),
-]
+] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) //required for uploading files

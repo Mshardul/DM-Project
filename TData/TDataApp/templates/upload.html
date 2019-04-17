@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+  {% block pageTitle %}Create Operation{% endblock %}
+  
+  {% block pageContent %}
+  <script type="text/javascript" src="{% static "js/upload.js" %}"></script>
+  <br>
+  <div class="row">
+    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+      <form>
+        {% csrf_token %}
+        <br>
+        <div>
+          <label class="btn btn-default btn=block">
+            Browse <input type="file" style="display: none;">
+          </label>
+        <div>
+        <hr>
+        <div class="row">
+          <div class="col-md-12">
+            <div id="addAttrBtn" style="float:right">
+              <span class="icon-input-btn">
+                <!-- <span class="glyphicon glyphicon-check"></span> -->
+                <input type="button" class="btn btn-primary" onclick="Upload()" value="Upload">
+              </span>
+            </div>
+          </div>
+        </div>
+      </form>
+      <br>
+    </div>
+  </div>
+  {% endblock %}
+
+</html>

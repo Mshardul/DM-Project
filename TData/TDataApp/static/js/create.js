@@ -117,7 +117,8 @@ function GetRel() {
 function AddAttr() {
   $('#rel_table').show();
 
-  var checkBox = '<td><input type="checkbox" name="temp" class="temp"></td>';
+  var isTemp = '<td><input type="checkbox" name="temp" class="temp"></td>';
+  
   var name = '<td><input type="text" class="colName"></td>';
 
   var type = '<td><select class="form-group colType">';
@@ -125,8 +126,12 @@ function AddAttr() {
     type += '<option value="' + i + '">' + dataTypes[i] + '</option>';
   }
   type += '</select></td>';
+  
+  var isNotNull = '<td><input type="checkbox" name="notNull" class="notNull"></td>';
+  
+  var isUnique = '<td><input type="checkbox" name="unique" class="unique"></td>';
 
-  $('#rel_table').append("<tr>" + checkBox + name + type + "</tr>");
+  $('#rel_table').append("<tr>" + isTemp + name + type + isNotNull + isUnique + "</tr>");
 }
 
 function AddRel() {
@@ -139,14 +144,21 @@ function AddRel() {
   table_data=[];
   $('#rel_table tr').each(function() {
     var isTemp = ($(this).find(".temp:checked").val());
-    if(isTemp==undefined)
-      temp=0;
-    else
-      temp=1;
+    if(isTemp==undefined) isTemp=0;
+    else isTemp=1;
+    
+    var isNotNull = ($(this).find(".notNull:checked").val());
+    if(isNotNull==undefined) isNotNull=0;
+    else isNotNull=1;
+    
+    var isUnique = ($(this).find(".unique:checked").val());
+    if(isUnique==undefined) isUnique=0;
+    else isUnique=1;
+      
     var attrName = ($(this).find(".colName").val()).toString();
     var attrType = ($(this).find(".colType").val()).toString();
     if(attrName!="")
-      table_data.push([temp, attrName, attrType]);
+      table_data.push([isTemp, attrName, attrType, isNotNull, isUnique]);
   })
   
   console.log(table_data);

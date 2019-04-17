@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+{% block pageTitle %}Readme{% endblock %}
+
+{% block pageContent %}
+<div class="row">
+  <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+    <div id="t1">
+      <table class="table" id="t1">
+        <tr><td>
+          <b>Temporalize</b>: User can temporalize the same table again and again. Unless there still exist one query for the same table, which is not yet addressed by the admin
+        </td></tr>
+        <tr><td>
+          <b>Temporalize</b>: Irrespective of what constraints existed for the yet-to-be-temporalized column, they will not be taken into account duting temporalization.
+        </td></tr>
+        <tr><td>
+          <b>Temporalize</b>: We will not be asking the user for the timeline, but will be taking the current time as both - the end time of previously entered row and the starting time of recently entered row.
+        </td></tr>
+        <tr><td>
+          <b>Admin</b>: When user is trying to temporalize an already temporalized column, Admin will get the notification. But there will be no sql statement for that, as it is already temporalized.
+        </td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<br><hr><br>
+
+<div class="row">
+  <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+    <div class="t2">
+      <table class="table">
+        <thead>
+          <tr>
+            <td><b>Temporalize Flow</b></td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1. User selects DB</td></tr>
+          <tr><td>2. User selects one of the relation of that db</td></tr>
+          <tr><td>3. User selects one or more attributes of that relation</td></tr>
+          <tr><td>4. User click on the 'Temporalize' button</td></tr>
+          <tr><td>5. An SQL query is generated, and sent to the admin</td></tr>
+          <tr><td>6. Only admin gets to decide, whether the query is right or not. And hence accepts or rejects it.</td></tr>
+          <tr><td>6(a). Accept - all the column gets one table each (with 3 columns - including start and end date)</td></tr>
+          <tr><td>6(b). Reject - Query gets deleted from the database.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<br><hr><br>
+
+<div class="row">
+  <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+    <div class="t2">
+      <table class="table">
+        <thead>
+          <tr><td>Problems yet to address in <b>Temporalize</b></td></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Getting older data, that already exists in the table, after temporalization.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<br>
+{% endblock %}
+
+</html>

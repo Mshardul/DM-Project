@@ -2,6 +2,10 @@ import models
 import datetime
 from django.db.models import Max
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
+import os
+import json
+import dbAccess
 
 def UniqueDB(dbName):
     ''' {0: db does not exist; db_id: otherwise} '''
@@ -46,7 +50,32 @@ def CreateDatabaseModel(dbName):
     dbObj.save()
     print("created db model")
     return dbId
+    
+def CreateRelModel(dbId, dbObj, relName):
+    print("creating rel model")
+    rId = UniqueRel(dbId, relName)
+    if(rId!=0):
+        return -1
+    rId = models.DBTable.objects.all().aggregate(Max('r_id'))['r_id__max']
+    if(rId==None):
+        rId=0
+    rId += 1
+    rObj = models.DBTable(db_id=dbObj, r_id=rId, r_name=relName)
+    rObj.save()
+    print('created rel model')
+    return rId
 
+def CreateAttrModel(rObj, attrName, attrType):
+    print("creating attr models")
+    # not checking for uniqueness as of now
+    aId = models.DBTAttributeNew.objects.all().aggregate(Max('a_id'))['a_id__max']
+    if(aId==None):
+        aId=0
+    aId+=1
+    aObj = models.DBTAttributeNew(r_id=rObj, a_id=aId, a_name=attrName, a_type=attrType)
+    aObj.save()
+    return 1
+    
 def GetRelId(dbId, relName):
     rel = models.DBTable.objects.filter(db_id=dbId, r_name=relName)
     if(rel.exists()):
@@ -111,14 +140,14 @@ def GetNextAId():
 def AddAttrToNonTemp(rObj, attr):
     print("Adding non temp attribute ", attr[1])
     aId = GetNextAId()
-    dbtaObj = models.DBTAttribute(r_id=rObj, a_id=aId, a_name=attr[1], a_type=attr[2], is_temp=attr[0])
+    dbtaObj = models.DBTAttribute(r_id=rObj, a_id=aId, a_name=attr[1], a_type=attr[2], is_temp=attr[0], is_notNull=attr[3], is_unique=attr[4])
     dbtaObj.save()
     return 1
     
 def AddAttrToTemp(rObj, aName, aType):
     print("Adding attributes to temporal rel")
     aId = GetNextAId()
-    dbtaObj = models.DBTAttribute(r_id=rObj, a_id=aId, a_name=aName, a_type=aType, is_temp=True)
+    dbtaObj = models.DBTAttribute(r_id=rObj, a_id=aId, a_name=aName, a_type=aType, is_temp=True, is_notNull=True, is_unique=False)
     dbtaObj.save()
     return 1
     
@@ -129,8 +158,92 @@ def AddTempRel(dbObj, attr):
     dbtObj.save()
     rObj = GetRelObject(rId)
     AddAttrToTemp(rObj, attr[1], attr[2])
+
+# working with external db //already present with end user
+
+def GetDBFolder():
+    baseDir = settings.BASE_DIR
+    dbFolder = os.path.join(baseDir, 'TDataApp/db_files')
+    return dbFolder
     
-# def CreateNonTempTable(dbObj, nonTempAttr):
-#     nonTempTable = models(nonTempAttr, models.Model,),{
-# 
-#     }
+def GetDBFromFolder():
+    print("=="*10)
+    dbFolder = GetDBFolder()
+    print(dbFolder)
+    dbList = []
+    for item in enumerate(os.listdir(dbFolder)):
+        extension = (item[1].split("."))[-1]
+        extensionL = -1-len(extension)
+        if(extension=="db"):
+            dbList.append(item[1])
+            # dbList.append(item[1][:extensionL])
+    print("=="*10)
+    return dbList
+    
+def GetRelFromDB(dbName):
+    dbFolder = GetDBFolder()
+    relList = dbAccess.GetRelFromDB(dbFolder, dbName)
+    return relList
+    
+def GetAttrFromRel(dbName, relName):
+    dbFolder = GetDBFolder()
+    attrList = dbAccess.GetAttrFromRel(dbFolder, dbName, relName)
+    return attrList
+
+def AddSQL(dbName, relName, sql):
+    sqlObj = models.SQL.objects.filter(db_name=dbName, rel_name=relName)
+    if(sqlObj.exists()):
+        return -1
+    sqlId = models.SQL.objects.all().aggregate(Max('sql_id'))['sql_id__max']
+    if(sqlId==None):
+        sqlId=0
+    sqlId+=1
+    sqlObj = models.SQL(sql_id=sqlId, db_name=dbName, rel_name=relName, sql=sql)
+    sqlObj.save()
+    return 1
+    
+def GetSql():
+    sqlObj = models.SQL.objects.all()
+    ret = []
+    for sql in sqlObj:
+        temp = []
+        temp.append(sql.sql_id)
+        temp.append(sql.db_name)
+        temp.append(sql.rel_name)
+        temp.append(sql.sql)
+        ret.append(temp)
+    return ret
+
+def ExecQuery(dbName, relName, query):
+    dbFolder = GetDBFolder()
+    x = dbAccess.ExecuteQuery(dbFolder, dbName, query)
+    if x==1:
+        y = DelQuery(dbName, relName, query)
+        return y
+    return x
+    
+def DelQuery(dbName, relName, query):
+    sqlObj = models.SQL.objects.filter(db_name=dbName, rel_name=relName, sql=query)
+    try:
+        if(sqlObj.exists()):
+            sqlObj.delete()
+    except Error as e:
+        return -1
+    return 1
+
+
+def CreateModels(dbName, relName, tempAttrName, tempAttrType):
+    dbId = CreateDatabaseModel(dbName)
+    dbObj = GetDBObject(dbId)
+    rId = CreateRelModel(dbId, dbObj, relName)
+    rObj = GetRelObject(rId)
+    if(rId==-1):
+        return rId
+    for i in range(len(tempAttrName)):
+        CreateAttrModel(rObj, tempAttrName[i], tempAttrType[i])
+    return 1
+    
+def AttrAlreadyTemp(dbName, tableName):
+    dbFolder = GetDBFolder()
+    return dbAccess.AttrAlreadyTemp(dbFolder, dbName, tableName)
+    

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+  {% block pageTitle %}Admin{% endblock %}
+  
+  {% block pageContent %}
+  <script type="text/javascript" src="{% static "js/admin.js" %}"></script>
+    <div>
+      <table class="table" id="sqlTable" style="border: 5px solid gray">
+        <thead>
+          <tr>
+            <td>ID</td>
+            <td>DB Name</td>
+            <td>Rel Name</td>
+            <td style="max-width: 50px">SQL Statement</td>
+            <td>Execute</td>
+            <td>Delete</td>
+          </tr>
+        </thead>
+        <tbody id="sqlStatements"></tbody>
+      </table>
+    </div>
+  
+  {% endblock %}
+
+</html>
