@@ -115,15 +115,15 @@ function EmptyAll(){
 function Temporalize(){
   var tempo = 0;
   var table_data = []; //list of list containing isTemp and colName
-  alert("temporalizing...");
   $('#addAttr tr').each(function() {
     var isTemp = ($(this).find(".temp:checked").val());
-    if(isTemp==undefined){
-      isTemp=0;
+    console.log(isTemp, typeof(isTemp));
+    if(isTemp=="on"){
+      isTemp=1;
       tempo+=1;
     }
     else{
-      isTemp=1;
+      isTemp=0;
     }
     
     var attrName = ($(this).find(".colName").html())//.toString();
@@ -159,6 +159,8 @@ function Temporalize(){
         swal('Done', 'Table created.', 'success');
       } else if (response == "-1") {
         swal('Duplication detected for this relations', 'Contact admin for further queries', 'error');
+      } else if(response == "0") {
+        swal('Given attribute(s) already temporalized', 'Duplication detected for this attribute', 'success');
       } else {
         swal('Something went wrong', 'we will get back to you later', 'error');
       }

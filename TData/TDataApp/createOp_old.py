@@ -1,3 +1,5 @@
+# file not used anymore - used for create operation
+
 import helper.py
 
 def CreateDatabaseModel(dbName):

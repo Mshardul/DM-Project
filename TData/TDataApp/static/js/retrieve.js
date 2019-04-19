@@ -8,7 +8,7 @@ $(document).ready(function(){
 })
 
 function EmptyAll(){
-  <!-- works on db.change() as well -->
+  // <!-- works on db.change() as well -->
   
 }
 

@@ -3,15 +3,18 @@ $(document).ready(function() {
   GetSql();
   
   $('.accept').click(function(){
-    var db = $(this).closest('tr').find('td:nth-child(1)').text();
-    var rel = $(this).closest('tr').find('td:nth-child(2)').text();
-    var sql = $(this).closest('tr').find('td:nth-child(3)').text();
+    var id = $(this).closest('tr').find('td:nth-child(1)').text();
+    var db = $(this).closest('tr').find('td:nth-child(2)').text();
+    var rel = $(this).closest('tr').find('td:nth-child(3)').text();
+    var sql = $(this).closest('tr').find('td:nth-child(4)').text();
+    var attr = $(this).closest('tr').find('td:nth-child(5)').text();
     
     var data = {};
     data.dbName = db;
     data.relName = rel;
     data.query = sql;
-    
+    data.queryId = id;
+    data.attr = attr;
     console.log(data);
     
     $.ajax({
@@ -88,10 +91,12 @@ function GetSql(){
       }
       table = "";
       for(var ind in resp){
+        console.log(resp[ind]);
         table += "<tr><td class='id'>"+resp[ind][0]+"</td>";
         table += "<td class='db'>"+resp[ind][1]+"</td>";
         table += "<td class='rel'>"+resp[ind][2]+"</td>";
         table += "<td class='sql'>"+resp[ind][3]+"</td>";
+        table += "<td class='attr'>"+resp[ind][4]+"</td>";
         table += "<td><input type='button' class='accept' value='execute'></td>";
         table += "<td><input type='button' class='reject' value='delete'></td></tr>";
       }

@@ -8,14 +8,17 @@
   
   {% block pageContent %}
   <script type="text/javascript" src="{% static "js/admin.js" %}"></script>
-    <div>
+  
+  <div class="row">
+    <div class="col-md-offset-2 col-md-8">
       <table class="table" id="sqlTable" style="border: 5px solid gray">
         <thead>
           <tr>
             <td>ID</td>
-            <td>DB Name</td>
-            <td>Rel Name</td>
-            <td style="max-width: 50px">SQL Statement</td>
+            <td>Database</td>
+            <td>Relation</td>
+            <td>SQL Statement</td>
+            <td>Attributes</td>
             <td>Execute</td>
             <td>Delete</td>
           </tr>
@@ -23,6 +26,7 @@
         <tbody id="sqlStatements"></tbody>
       </table>
     </div>
+  </div>
   
   {% endblock %}
 

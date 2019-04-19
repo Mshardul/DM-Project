@@ -23,6 +23,7 @@ class DBTable(models.Model):
 	db_id = models.ForeignKey(Database, on_delete=models.CASCADE)
 	r_id = models.IntegerField(null=False)
 	r_name = models.CharField(max_length=20, null=False)
+    # temp_attr = models.CharField(max_length=1000)
 
 class DBTAttribute(models.Model): #was being used for 'Create'; not anymore
 	# class Meta(object):
@@ -47,5 +48,5 @@ class SQL(models.Model):
     db_name = models.CharField(max_length=100, null=False)
     rel_name = models.CharField(max_length=100, null=False)
     sql = models.CharField(max_length=1000, null=False)
-    
+    attr_list = models.CharField(max_length=100, null=False)
 # dynamic tables to be created as well.
