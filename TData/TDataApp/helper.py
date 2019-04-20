@@ -206,3 +206,8 @@ def MakeTemp(dbName, relName, attrList): # views.TempRel()
         CreateModels(dbName, relName, tempAttrName, tempAttrType) # not significant, as of now
     
     return x
+    
+def InsertQuery(dbName, relName, attrVal): #views.InsertQuery()
+    dbFolder = GetDBFolder()
+    x = dbAccess.InsertQuery(dbFolder, dbName, relName, attrVal)
+    return x

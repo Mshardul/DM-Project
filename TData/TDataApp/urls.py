@@ -4,12 +4,14 @@ from . import views
 
 urlpatterns = [    
     
+    #insert
+    url(r'insertQuery/$', views.InsertQuery, name="InsertQuery"),
+    
     #temporalize
     url(r'get_dbList/$', views.GetDBList, name="GetDBList"),
     url(r'get_relList/$', views.GetRelList, name="GetRelList"),
     url(r'get_attrList/$', views.GetAttrList, name="GetAttrList"),
-    url(r'temp_rel/$', views.TempRel, name="TempRel"),
-    
+    url(r'temp_rel/$', views.TempRel, name="TemporalizeQuery"),
     
     #admin
     url(r'get_sql/$', views.GetSql, name="GetSql"),
@@ -21,10 +23,11 @@ urlpatterns = [
     
     #html pages
     url(r'base/$', views.Base, name="base"),
-    url(r'upload/$', views.Upload, name="uploadOperation"),
-    url(r'create/$', views.Create, name="createOperation"),
+    url(r'upload/$', views.Upload, name="UploadOperation"),
+    url(r'create/$', views.Create, name="CreateOperation"),
     url(r'makeTemp/$', views.Temporalize, name="Temporalize"),
-    url(r'retrieve/$', views.Retrieve, name="retrieveOperation"),
+    url(r'retrieve/$', views.Retrieve, name="RetrieveOperation"),
+    url(r'insert/$', views.Insert, name="InsertOperation"),
     url(r'readme/$', views.Readme, name="Readme"),
     url(r'', views.Home, name="homepage"),
     

@@ -60,6 +60,7 @@ def ExecuteQuery(dbFolder, dbName, query): # helper.ExecQuery()
 def AttrAlreadyTemp(dbFolder, dbName, tableName): # helper.AttrAlreadyTemp()
     curs = (CreateConnToExternalDB(dbFolder, dbName)).cursor()
     tables = GetRelFromDB(dbFolder, dbName)
+    print(tables)
     if(tableName in tables):
         return True
     return False
@@ -96,5 +97,54 @@ def GetTempData(dbFolder, dbName, relName, attrs): # helper.ExecQuery()
             print(e)
             conn.rollback()
             return 0
+
+def InsertQuery(dbFolder, dbFullName, relName, attrVal): #helper.InsertQuery()
+    dateNow = datetime.datetime.now()
+    today = dateNow.strftime("%Y-%m-%d")
     
-            
+    dbName = (dbFullName.split("."))[0]
+    
+    pk = GetPK(dbFolder, dbFullName, relName)
+    pkVal = 0
+    tempAttr = []
+    attrStr = ""
+    valStr = ""
+    
+    print(attrVal)
+    for attr in attrVal:
+        attrStr += attr[0]+", "
+        if(attr[1].upper()=="TEXT"):
+            attr[2] = "'"+attr[2]+"'"
+        valStr += attr[2]+", "
+        attrTableName = "hist_"+dbName+"_"+relName+"_"+attr[0]
+        if(AttrAlreadyTemp(dbFolder, dbFullName, attrTableName)):
+            tempAttr.append(attr)
+        if(attr[0]==pk[0]):
+            pkVal = attr[2]
+    
+    if(pk[1].upper()=="TEXT"):
+        pkVal = "'"+pkVal+"'"
+        
+    print(tempAttr)
+    print(today, pk, pkVal)
+    sql = "INSERT INTO "+relName+" ("+attrStr[:-2]+") VALUES ("+valStr[:-2]+"); "
+    
+    for attr in tempAttr:
+        tempRelName = "hist_"+dbName+"_"+relName+"_"+attr[0]
+        sql += "UPDATE "+tempRelName+" SET ed_"+attr[0]+" = '"+today+"' WHERE "+pk[0]+" = "+pkVal+"; "
+        sql += "INSERT INTO "+tempRelName+" ("+pk[0]+", sd_"+attr[0]+", "+attr[0]+") VALUES ("+pkVal+", '"+today+"', "+attr[2]+"); "
+    
+    print(sql)
+    
+    try:
+        conn = CreateConnToExternalDB(dbFolder, dbFullName)
+        curs = conn.cursor()
+        for query in sql.split(";"):
+            curs.execute(query)
+        conn.commit()
+        conn.close()
+    except Error as e:
+        conn.rollback()
+        print(e)
+        return 0
+    return 1

@@ -38,6 +38,8 @@ def Temporalize(request):
 def Admin(request):
 	return render_to_response('admin.html')
 
+def Insert(request):
+	return render_to_response('insert.html')
 
 ''' controllers '''
 
@@ -109,4 +111,17 @@ def DelQuery(request):
 	queryId = data['queryId']
 	
 	x = helper.DelQuery(dbName, relName, query)
+	return HttpResponse(x)
+
+# --------------> insert
+@csrf_exempt
+def InsertQuery(request):
+	data = json.loads(request.POST['data'])
+	
+	dbName = data['dbName']
+	relName = data['relName']
+	attrVal = data['attrVal']
+	
+	print(data)
+	x = helper.InsertQuery(dbName, relName, attrVal)
 	return HttpResponse(x)
