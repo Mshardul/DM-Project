@@ -41,6 +41,8 @@ def Admin(request):
 def Insert(request):
 	return render_to_response('insert.html')
 
+def Delete(request):
+	return render_to_response('delete.html')
 ''' controllers '''
 
 # --------------> temporalize
@@ -124,4 +126,16 @@ def InsertQuery(request):
 	
 	print(data)
 	x = helper.InsertQuery(dbName, relName, attrVal)
+	return HttpResponse(x)
+	
+@csrf_exempt
+def DeleteQuery(request):
+	data = json.loads(request.POST['data'])
+	
+	dbName = data['dbName']
+	relNames = data['relNames']
+	additionalRel = data['additionalRel']
+	where = data['where']
+	
+	x=helper.DeleteQuery(dbName, relNames, additionalRel, where)
 	return HttpResponse(x)

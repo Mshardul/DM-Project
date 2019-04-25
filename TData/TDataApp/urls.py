@@ -4,6 +4,9 @@ from . import views
 
 urlpatterns = [    
     
+    #delete
+    url(r'deleteQuery/$', views.DeleteQuery, name="DeleteQuery"),
+    
     #insert
     url(r'insertQuery/$', views.InsertQuery, name="InsertQuery"),
     
@@ -29,6 +32,7 @@ urlpatterns = [
     url(r'retrieve/$', views.Retrieve, name="RetrieveOperation"),
     url(r'insert/$', views.Insert, name="InsertOperation"),
     url(r'readme/$', views.Readme, name="Readme"),
+    url(r'delete/$', views.Delete, name="DeleteOperation"),
     url(r'', views.Home, name="homepage"),
     
     #not using anymore

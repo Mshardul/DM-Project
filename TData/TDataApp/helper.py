@@ -84,8 +84,7 @@ def CreateDatabaseModel(dbName):
     dbObj.save()
     print("created db model")
     return dbId
-# usage known
-
+    
 def GetDBFromFolder(): # views.GetDBList()
     print("=="*10)
     dbFolder = GetDBFolder()
@@ -210,4 +209,27 @@ def MakeTemp(dbName, relName, attrList): # views.TempRel()
 def InsertQuery(dbName, relName, attrVal): #views.InsertQuery()
     dbFolder = GetDBFolder()
     x = dbAccess.InsertQuery(dbFolder, dbName, relName, attrVal)
+    return x
+    
+def RemoveUnnecessaryWhitespaces(lst):
+    ret = []
+    for str in lst:
+        if str!="":
+            ret.append(str)
+    return ret
+    
+def RemoveRecurringRel(relNames, additionalRel):
+    ret = []
+    for aRel in additionalRel:
+        if aRel not in relNames:
+            ret.append(aRel)
+    return ret
+            
+def DeleteQuery(dbName, relNames, additionalRel, where): #views.DeleteQuery()
+    dbFolder = GetDBFolder()
+    relNames = RemoveUnnecessaryWhitespaces(relNames)
+    additionalRel = RemoveUnnecessaryWhitespaces(additionalRel.split(","))
+    additionalRel = RemoveRecurringRel(relNames, additionalRel)
+    print(dbName, relNames, additionalRel, where)
+    x = dbAccess.DeleteQuery(dbName, relNames, additionalRel, where)
     return x

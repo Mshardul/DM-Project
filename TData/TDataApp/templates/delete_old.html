@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+  {% block pageTitle %}Insert Operation{% endblock %}
+  
+  {% block pageContent %}
+  
+  <script type="text/javascript" src="{% static "js/delete.js" %}"></script>
+  
+  <hr>
+  
+  <div class="row">
+    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray" id="helperBlock">
+      <form id="inputForm">
+        {% csrf_token %}
+        <br>
+        <div class="form-group" id="dbDiv">
+          <label for="db_name">Select DataBase:</label>
+          <select class="form-control select_db" id="select_db"></select>
+        </div>
+        <hr>
+        <div class="repetitiveDiv" id="repDiv">
+          <div class="form-group relDiv">
+            <label for="select rel">Select Relation</label>
+            <select class="form-control select_rel" id="select_rel0"></select>
+            <label>Attributes</label>
+            <input type="text" class="form-control" id="colNames0">
+          </div>
+        </div>
+        <input type="button" value="DONE" onClick="Delete()" style="float:right">
+        <input type="button" value="Add Attr" onClick="AddAttr()" style="float:right">
+        <br><br>
+      </form>
+    </div>
+  </div>
+  {% endblock %}
+
+</html>
+
+
+<!-- function AddAttr(){
+  var html = '<hr><div class="form-group relDiv"><label for="select rel">Select Relation</label><select class="form-control select_rel" id="select_rel'+epochCount+'"></select><label>Attributes</label><input type="text" class="form-control" id="colNames'+epochCount+'"></div>';
+  $('#repDiv').append(html);
+  epochCount++;
+  
+} -->

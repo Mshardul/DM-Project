@@ -139,7 +139,9 @@ function Insert(){
     url: "insertQuery/",
     success: function(response){
       if(response==1){
-        swal("Insertion Successful", "", "success");
+        swal({ title: "Insertion Successful", icon: "success"}).then(function(){
+          location.reload();
+        });
       }else{
         swal("Something went wrong", "please look for the constraints", "error");
       }

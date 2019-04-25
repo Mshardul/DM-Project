@@ -148,3 +148,20 @@ def InsertQuery(dbFolder, dbFullName, relName, attrVal): #helper.InsertQuery()
         print(e)
         return 0
     return 1
+    
+def DeleteQuery(dbName, relNames, additionalRel, where): #helper.DeleteQuery()
+    deleteRels =  ",".join(relNames)
+    fromRels = ""
+    if(len(additionalRel)==0):
+        fromRels = deleteRels
+    else:
+        fromRels = deleteRels +","+ ",".join(additionalRel)
+        
+    sql = "DELETE "+deleteRels+" FROM "+fromRels
+    if(where!=""):
+        sql += " WHERE "+where
+    print(sql)
+    
+    return 1
+
+    
