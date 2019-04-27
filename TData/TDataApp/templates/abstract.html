@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+  {% block pageTitle %}Delete Operation{% endblock %}
+  
+  {% block pageContent %}
+  <div class="row">
+    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray" id="helperBlock">
+      <br>
+        The aim is to create a data store which allows users to specify the attributes of the table as well as specify which attributes are temporal in nature. Temporal attributes must be associated with a start and end time(called transaction time). The user must be allowed to write temporal queries i.e. what was the state of system x when system y was at a particular value. Ability to do temporal joins must also be provided.
+      <br><br>
+    </div>
+  </div>
+    
+  {% endblock %}
+
+</html>

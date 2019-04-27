@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+  {% block pageTitle %}Delete Operation{% endblock %}
+  
+  {% block pageContent %}
+  
+  <div class="row">
+    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray" id="helperBlock">
+      <table class="table">
+        <thead>
+          <tr>
+            <td>Roll Number</td>
+            <td>Name</td>
+            <td>Module</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>MT2018...</td>
+            <td>Roopak Rastogi</td>
+            <td>...</td>
+          </tr>
+          <tr>
+            <td>MT2018...</td>
+            <td>Shubham Jindal</td>
+            <td>...</td>
+          </tr>
+          <tr>
+            <td>MT2018108</td>
+            <td>Shardul Lingwal</td>
+            <td>...</td>
+          </tr>
+      </table>
+    </div>
+  </div>
+  
+  {% endblock %}
+
+</html>

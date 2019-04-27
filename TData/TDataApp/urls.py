@@ -26,6 +26,8 @@ urlpatterns = [
     
     #html pages
     url(r'base/$', views.Base, name="base"),
+    url(r'abstract/$', views.Abstract, name="Abstract"),
+    url(r'developers/$', views.Developers, name="Developers"),
     url(r'upload/$', views.Upload, name="UploadOperation"),
     url(r'create/$', views.Create, name="CreateOperation"),
     url(r'makeTemp/$', views.Temporalize, name="Temporalize"),

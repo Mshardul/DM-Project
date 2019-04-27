@@ -149,19 +149,30 @@ def InsertQuery(dbFolder, dbFullName, relName, attrVal): #helper.InsertQuery()
         return 0
     return 1
     
-def DeleteQuery(dbName, relNames, additionalRel, where): #helper.DeleteQuery()
+def DeleteQuery(dbFolder, dbName, relNames, where, additionalQuery): #helper.DeleteQuery()
     deleteRels =  ",".join(relNames)
     fromRels = ""
-    if(len(additionalRel)==0):
-        fromRels = deleteRels
-    else:
-        fromRels = deleteRels +","+ ",".join(additionalRel)
+    # if(len(additionalRel)==0):
+    #     fromRels = deleteRels
+    # else:
+    #     fromRels = deleteRels +","+ ",".join(additionalRel)
         
-    sql = "DELETE "+deleteRels+" FROM "+fromRels
+    sql = "DELETE FROM "+deleteRels
     if(where!=""):
         sql += " WHERE "+where
+    if(additionalQuery!=""):
+        sql += additionalQuery
+    sql+=";"
     print(sql)
-    
+        
+    try:
+        conn = CreateConnToExternalDB(dbFolder, dbName)
+        curs = conn.cursor()
+        curs.execute(sql)
+        conn.commit()
+        conn.close()
+    except Error as e:
+        conn.rollback()
+        print(e)
+        return 0
     return 1
-
-    

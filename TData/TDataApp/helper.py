@@ -225,11 +225,10 @@ def RemoveRecurringRel(relNames, additionalRel):
             ret.append(aRel)
     return ret
             
-def DeleteQuery(dbName, relNames, additionalRel, where): #views.DeleteQuery()
+def DeleteQuery(dbName, relNames, where, additionalQuery): #views.DeleteQuery()
     dbFolder = GetDBFolder()
     relNames = RemoveUnnecessaryWhitespaces(relNames)
-    additionalRel = RemoveUnnecessaryWhitespaces(additionalRel.split(","))
-    additionalRel = RemoveRecurringRel(relNames, additionalRel)
-    print(dbName, relNames, additionalRel, where)
-    x = dbAccess.DeleteQuery(dbName, relNames, additionalRel, where)
+    # additionalRel = RemoveUnnecessaryWhitespaces(additionalRel.split(","))
+    # additionalRel = RemoveRecurringRel(relNames, additionalRel)
+    x = dbAccess.DeleteQuery(dbFolder, dbName, relNames, where, additionalQuery)
     return x

@@ -9,7 +9,6 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from . import helper
 
 import json
-import pprint
 
 # Create your views here.
 
@@ -19,6 +18,12 @@ def Base(request):
 	
 def Home(request):
 	return render_to_response('home.html')
+	
+def Abstract(request):
+	return render_to_response('abstract.html')
+	
+def Developers(request):
+	return render_to_response('developers.html')
 
 def Create(request):
 	return render_to_response('create.html')
@@ -134,8 +139,9 @@ def DeleteQuery(request):
 	
 	dbName = data['dbName']
 	relNames = data['relNames']
-	additionalRel = data['additionalRel']
+	# additionalRel = data['additionalRel']
 	where = data['where']
+	additionalQuery = data['additionalQuery'].strip()
 	
-	x=helper.DeleteQuery(dbName, relNames, additionalRel, where)
+	x=helper.DeleteQuery(dbName, relNames, where, additionalQuery)
 	return HttpResponse(x)

@@ -92,14 +92,16 @@ function Delete(){
       relSelected.push(relName);
   }
   
-  var additionalRelVal = $("#additionalRel").val();
+  // var additionalRelVal = $("#additionalRel").val();
   var whereVal = $("#whereClause").val();
+  var additionalQueryVal  = $("#additionalQuery").val();
   
   var data = {};
   data.dbName = dbSelected;
   data.relNames = relSelected;
-  data.additionalRel = additionalRelVal;
+  // data.additionalRel = additionalRelVal;
   data.where = whereVal;
+  data.additionalQuery = additionalQueryVal;
   
   console.log(data);
   
@@ -111,7 +113,16 @@ function Delete(){
       'data': JSON.stringify(data)
     },
     success: function(resp){
-      alert(resp, typeof(resp));
+      console.log(resp, typeof(resp));
+      if(resp=="1"){
+        swal({ title: "Deletion Successful", icon: "success"}).then(function(){
+          location.reload();
+        });
+      } else if(resp=="0"){
+        swal("Something went wrong", "Please check the query again", "error");
+      } else {
+        swal("Something went wrong", "We will get back to you later", "error");
+      }
     },
     error(err){
       alert(err);
