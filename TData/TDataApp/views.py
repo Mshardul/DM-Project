@@ -45,11 +45,15 @@ def Admin(request):
 
 def Insert(request):
 	return render_to_response('insert.html')
+	
+def Update(request):
+	return render_to_response('update.html')
 
 def Delete(request):
 	return render_to_response('delete.html')
-''' controllers '''
 
+
+''' controllers '''
 # --------------> temporalize
 
 @csrf_exempt

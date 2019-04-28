@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'retrieve/$', views.Retrieve, name="RetrieveOperation"),
     url(r'insert/$', views.Insert, name="InsertOperation"),
     url(r'readme/$', views.Readme, name="Readme"),
+    url(r'update/$', views.Update, name="UpdateOperation"),
     url(r'delete/$', views.Delete, name="DeleteOperation"),
     url(r'', views.Home, name="homepage"),
     
