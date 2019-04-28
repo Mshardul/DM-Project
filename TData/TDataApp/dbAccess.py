@@ -92,11 +92,11 @@ def GetTempData(dbFolder, dbName, relName, attrs): # helper.ExecQuery()
         curs.executemany(sql_insert, val)
         try:
             conn.commit()
-            return 1
         except Error as e:
             print(e)
             conn.rollback()
             return 0
+    return 1
 
 def InsertQuery(dbFolder, dbFullName, relName, attrVal): #helper.InsertQuery()
     dateNow = datetime.datetime.now()
@@ -131,7 +131,7 @@ def InsertQuery(dbFolder, dbFullName, relName, attrVal): #helper.InsertQuery()
     
     for attr in tempAttr:
         tempRelName = "hist_"+dbName+"_"+relName+"_"+attr[0]
-        sql += "UPDATE "+tempRelName+" SET ed_"+attr[0]+" = '"+today+"' WHERE "+pk[0]+" = "+pkVal+"; "
+        sql += "UPDATE "+tempRelName+" SET ed_"+attr[0]+" = '"+today+"' WHERE "+pk[0]+" = "+pkVal+" AND ed_"+attr[0]+" IS NULL;"
         sql += "INSERT INTO "+tempRelName+" ("+pk[0]+", sd_"+attr[0]+", "+attr[0]+") VALUES ("+pkVal+", '"+today+"', "+attr[2]+"); "
     
     print(sql)
@@ -149,6 +149,18 @@ def InsertQuery(dbFolder, dbFullName, relName, attrVal): #helper.InsertQuery()
         return 0
     return 1
     
+def GetTempRel(dbFolder, dbFullName, relName):
+    ret = []
+    relList = GetRelFromDB(dbFolder, dbFullName)
+    dbName = dbFullName.split(".")[0]
+    str = "hist_"+dbName+"_"+relName
+    n = len(str)
+    for rel in relList:
+        if(rel[:n]==str):
+            ret.append(rel)
+    return ret
+    
+'''
 def DeleteQuery(dbFolder, dbName, relNames, where, additionalQuery): #helper.DeleteQuery()
     deleteRels =  ",".join(relNames)
     fromRels = ""
@@ -176,3 +188,139 @@ def DeleteQuery(dbFolder, dbName, relNames, where, additionalQuery): #helper.Del
         print(e)
         return 0
     return 1
+'''
+
+'''
+def DeleteQuery(dbFolder, dbFullName, relNames, where, additionalQuery): #helper.DeleteQuery()
+    deleteRels =  ",".join(relNames)
+    fromRels = ""
+    # if(len(additionalRel)==0):
+    #     fromRels = deleteRels
+    # else:
+    #     fromRels = deleteRels +","+ ",".join(additionalRel)
+    
+    sql_insert = ""
+    for rel in relNames:
+        pk = GetPK(dbFolder, dbFullName, rel)
+        pkVal = []
+        sql_insert = "SELECT "+pk+" FROM "+rel
+        if(where!=""):
+            sql_insert += " WHERE "+where
+        if(additionalQuery!=""):
+            sql_insert += additionalQuery
+        sql_insert += ";"
+        tempRel = GetTempRel(dbFolder, dbFullName, rel)
+        for r in tempRel:
+            attr = r.split("_")[-1]
+            sql_insert += "UPDATE "+r+" SET ed_"+attr+" = '"+today+"' WHERE "+pk+" = "+pkVal+"; "
+        
+        
+
+    sql_delete = "DELETE FROM "+deleteRels
+    if(where!=""):
+        sql_delete += " WHERE "+where
+    if(additionalQuery!=""):
+        sql_delete += additionalQuery
+    sql_delete += ";"
+    
+    print(sql_insert)
+    print(sql_delete)
+        
+    try:
+        conn = CreateConnToExternalDB(dbFolder, dbFullName)
+        curs = conn.cursor()
+        
+        curs.execute(sql_insert)
+        pkVal = curs.fetchall()
+        print(pkVal)
+        
+        # curs.execute(sql)
+        # print(curs.fetchmany())
+        # conn.commit()
+        conn.close()
+    except Error as e:
+        conn.rollback()
+        print(e)
+        return 0
+    return 1
+'''
+
+def DeleteQuery(dbFolder, dbFullName, relNames, where, additionalQuery): #helper.DeleteQuery()
+    dateNow = datetime.datetime.now()
+    today = dateNow.strftime("%Y-%m-%d")
+    
+    pk = []
+    pkVal = []
+    pkColType = []
+    
+    dbName = dbFullName.split(".")[0]
+    for rel in relNames:
+        pkCol = GetPK(dbFolder, dbFullName, rel)
+        pk.append(rel+"."+pkCol[0])
+        pkColType.append(pkCol[1])
+        
+    pkColList = ", ".join(pkColType)
+    sql_insert = "SELECT "
+    pkList = ", ".join(pk)
+    sql_insert += pkList
+    sql_insert += " FROM "
+    relList = ", ".join(relNames)
+    sql_insert += relList
+    if(where!=""):
+        sql_insert += " WHERE "+where
+    sql_insert += ";"
+    
+    print(sql_insert)
+    
+    tempRels = GetTempRel(dbFolder, dbFullName, relList)
+    try:
+        conn = CreateConnToExternalDB(dbFolder, dbFullName)
+        curs = conn.cursor()
+        curs.execute(sql_insert)
+        
+        for val in curs.fetchall():
+            pkVal.append(val[0])
+        
+        print(pkVal)
+    except Exception as e:
+        return 0
+        
+    sql_update = ""
+    for rel in tempRels:
+        attrName = rel.split("_")[-1]
+        for val in pkVal:
+            sql_update += "UPDATE "+rel
+            sql_update += " SET ed_"+attrName
+            sql_update += " = '"+today+"'"
+            sql_update += " WHERE "+((pkList.split("."))[-1])+" = "
+            if(pkColList.upper()=="TEXT"):
+                sql_update += "'"+val+"'"
+            else:
+                sql_update += str(val)
+            sql_update += " AND ed_"+attrName+" IS NULL;"
+    
+    print(sql_update)
+    
+    deleteRels =  ",".join(relNames)
+    sql_delete = "DELETE FROM "+deleteRels
+    if(where!=""):
+        sql_delete += " WHERE "+where
+    if(additionalQuery!=""):
+        sql_delete += additionalQuery
+    sql_delete+=";"
+    print(sql_delete)
+    
+    try:
+        conn = CreateConnToExternalDB(dbFolder, dbFullName)
+        curs = conn.cursor()
+        curs.execute(sql_delete)
+        for query in sql_update.split(";"):
+            curs.execute(query)
+        conn.commit()
+        conn.close()
+    except Error as e:
+        conn.rollback()
+        print(e)
+        return 0
+    return 1
+    
