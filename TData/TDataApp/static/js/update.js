@@ -42,10 +42,7 @@ function UpdateRelList(){
     str+='<option value="'+i+'">'+relList[i]+"</option>";
   }
   console.log(str);
-  // for(var i=0; i<epochCount; i++){
-  //   var id = "#select_rel"+i;
-  //   $(id).html(str);
-  // }
+  
   $("#select_rel").html(str);
 }
 
