@@ -132,6 +132,7 @@ function AddRel(){
 
   var attrForm = document.createElement('form');
   attrForm.id = "form" + x;
+  
   var inp = document.createElement('input');
   inp.setAttribute('type', 'text');
   inp.setAttribute('id', 'attrList'+x);
@@ -181,9 +182,6 @@ function Submit(){
   // alert(compiled_list.length);
   $('#FromWrapper tr').each(function(){
     var isTemp = ($(this).find(".FromList:checked").val());
-
-    var isTemp1 = ($(this).find(".relNameCheckBox").val());
-
     var isTemp2 = ($(this).find(".relNameCheckBox").html());
 
     console.log("---------");

@@ -8,9 +8,9 @@
 
   {% block pageContent %}
   
-  <!-- <script type="text/javascript" src="{% static "js/retrieve.js" %}"></script> -->
+  <script type="text/javascript" src="{% static "js/retrieve.js" %}"></script>
   <br>
-  <div class="row">
+  <!-- <div class="row">
     <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
       {% csrf_token %}
       <br>
@@ -31,6 +31,68 @@
         
       <hr>
     </div>
+  </div> -->
+<div class="col-md-offset-2 col-md-8" style="border: 2px solid black" id="AllContainer">
+  <br>
+  <div class="row">
+      <!-- <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray" id="AllRelContainer"> -->
+      <div class="col-md-offset-2 col-md-8"  id="AllRelContainer">
+      <form>
+        {% csrf_token %}
+        <br>
+        <div class="form-group" id="dbDiv">
+          <label for="db_name">Select DataBase:</label>
+          <select class="form-control" id="select_db"></select>
+          <br>
+        </div>
+        <hr>
+        <div class="form-group" id="relDiv">
+          <b>Select Relation(s)</b>
+          <select class="form-control" id="1"></select>
+          <form>
+          <br> 
+            Attributes: <input type="text" name="attrList" id="attrList1"><br></p>
+          </form>
+        </div>
+      </form>
+      
+    </div>
   </div>
+    <div class = "row">
+      <div class="col-md-offset-2 col-md-8"  id="FromWhereWrapper">
+        <input type="button" value="Add More Relations" onClick="AddRel()">
+        <br>
+        <br>
+        <br>
+        <br>
+        From which relations you want to use? 
+        <input type = "button" value="Choose Relations" onClick="FromCondition()">
+        <table class='table'>
+          <tbody id='FromWrapper'>
+          </tbody>
+        </table>
+        <p>WHERE</p>
+        <input type="text" name="" id="WhereWrapper"  class='form-control'>
+        <br>
+        <p>&ltADDITIONAL QUERY&gt</p>
+        <input type="text" name="" id="WhereWrapper"  class='form-control'>    
+      </div>
+    </div>
+    
+    <div class = 'row'>
+      <div class="col-md-offset-2 col-md-8"  id="SubmitButtonWrapper">
+        <br>
+        <br>
+        <input type="button" value="Submit"  onClick="Submit()">
+      </div>
+    </div>
+    <br>
+</div>  
   {% endblock %}
 </html>
+
+
+
+        
+
+  
