@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'makeTemp/$', views.Temporalize, name="Temporalize"),
     url(r'retrieve/$', views.Retrieve, name="retrieveOperation"),
     url(r'readme/$', views.Readme, name="Readme"),
+    url(r'update/$', views.Update, name="Update"),
     url(r'', views.Home, name="homepage"),
     
     #not using anymore

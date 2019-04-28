@@ -38,7 +38,8 @@ def Temporalize(request):
 def Admin(request):
 	return render_to_response('admin.html')
 
-
+def Update(request):
+	return render_to_response('update.html')
 ''' controllers '''
 
 # --------------> temporalize
