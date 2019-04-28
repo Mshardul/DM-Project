@@ -4,61 +4,60 @@
 <!DOCTYPE html>
 <html>
 
-  {% block pageTitle %}Update Operation{% endblock %}
+  {% block pageTitle %}Delete Operation{% endblock %}
   
   {% block pageContent %}
+  
   <script type="text/javascript" src="{% static "js/update.js" %}"></script>
   
+  <hr>
+  
   <div class="row">
-    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray" id="AllRelContainer">
-      <form>
+    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray" id="helperBlock">
+      <form id="inputForm">
         {% csrf_token %}
         <br>
         <div class="form-group" id="dbDiv">
           <label for="db_name">Select DataBase:</label>
-          <select class="form-control" id="select_db"></select>
-          <br>
+          <select class="form-control select_db" id="select_db"></select>
         </div>
         <hr>
-        <div class="form-group" id="relDiv">
-          <b>Select Relation</b>
-          <select class="form-control" id="1"></select>
-          <br>
-          <form> 
-            Attributes: <input type="text" name="attrList" id="attrList1"><br></p>
-          </form>
-        </div>
-      </form>
-      <input type="button" value="Add More Relations"  onClick="AddRel()">
-      <br>
-      <br>
-    </div>
-    
-    <div class = "row">
-      <div class="col-md-offset-2 col-md-8"  id="FromWhereWrapper">
-        <br>
-        <br>
-        From which relations you want to use? 
-        <input type = "button" value="Choose Relations" onClick="FromCondition()">
-        <table class='table'>
-          <tbody id='FromWrapper'>
-          </tbody>
-        </table>
-        <p>Specify the conditions: </p>
-        <input type="text" name="" id="WhereWrapper"  class='form-control'>    
-      </div>
-    </div>
-    
-    <div class = 'row'>
-      <div class="col-md-offset-2 col-md-8"  id="SubmitButtonWrapper">
-        <br>
-        <br>
-        <!-- <input type="button" value="Submit"  onClick="getAttrList()"> -->
-        <input type="button" value="Submit"  onClick="Submit()">
-      </div>
-    </div>
+        <div class="repetitiveDiv" id="repDiv">
+          <div class="form-group relDiv">
+            <label for="select rel">Select Relation</label>
+            <select class="form-control select_rel" id="select_rel"></select>
+          </div>
+        </div>  
         
-
+        <hr>
+        
+        <div class="form-group" id="attrTableDiv" hidden>
+            <table class="table" style="border: 2px solid grey" id="attributesTable">
+              <thead>
+                <tr>
+                  <td>Attribute Name</td>
+                  <td>Attribute Type</td>
+                  <td>Set new Value</td>
+                </tr>
+              </thead>
+              <tbody id="addAttr"></tbody>
+            </table>
+          </div>
+        <hr>
+        <div class="form-group" id="whereClauseDiv">
+          <label for="whereClause">WHERE</label>
+          <input type="text" class="form-control" id="whereClause">
+        </div>
+        <hr>
+        <div class="form-group" id="additionalQueryDiv">
+          <label for="additional query">&ltAdditional Query&gt</label>
+          <input type="text" class="form-control" id="additionalQuery">
+        </div>
+        <input type="button" value="DONE" onClick="Update()" style="float:right">
+        <br><br>
+      </form>
+    </div>
+  </div>
   {% endblock %}
 
 </html>

@@ -1,10 +1,12 @@
 var dbList = [];
 var relList = [];
-var attrList = [];
-var x = 1;
+var epochCount = 1;
+
+// var dbSelected = "";
+// var relSelected = {};
+
 var selectedDB;
-var selectedRel;
-var compiled_list = [];
+var selectedRel; 
 
 function UpdateDBList(){
   console.log(dbList.length);
@@ -28,24 +30,26 @@ function GetDBList(){
       UpdateDBList();
     },
     error: function(response){
-      // alert(response.status);
       console.log(response.status);
     },
   })
 }
 
-function UpdateRelList(id){
+function UpdateRelList(){
   console.log(relList.length);
   var str = '<option value="-1" disabled selected>---Select Table---</option>';
-  var i=0;
-  for(i=0; i<relList.length; i++){
+  for(var i=0; i<relList.length; i++){
     str+='<option value="'+i+'">'+relList[i]+"</option>";
   }
   console.log(str);
-  document.getElementById(id).innerHTML = str;
+  // for(var i=0; i<epochCount; i++){
+  //   var id = "#select_rel"+i;
+  //   $(id).html(str);
+  // }
+  $("#select_rel").html(str);
 }
 
-function GetRelList(selectedDB, id){
+function GetRelList(selectedDB){
   $.ajax({
     type: "POST",
     url: "get_relList/",
@@ -55,28 +59,28 @@ function GetRelList(selectedDB, id){
     },
     success: function(response) {
       relList = JSON.parse(response);
-      UpdateRelList(id);
+      UpdateRelList();
     },
     error: function(response){
-      // alert(response.status);
       console.log(response.status);
     },
   })
 }
 
-function UpdateAttrList(){
-  console.log(attrList);
+function UpdateAttrList(attrList){
   str=''
   val = 0
   for(var attr in attrList){
-    str+='<tr><td><input type="checkbox" class="temp" val="'+val+'"></td>';
-    str+='<td class="colName">'+attrList[attr][0]+'</td>';
-    str+='<td class="colType">'+attrList[attr][1]+'</td></tr>';
+    console.log(attrList[attr]);
+    str += '<tr><td class="colName">'+attrList[attr][0]+'</td>';
+    str += '<td class="colType">'+attrList[attr][1]+'</td>';
+    str += '<td class="value"><input type="text" class="colVal"></td></tr>';
   }
-  
+
   console.log(str);
   $("#addAttr").html(str);
-  $("#attributesTable").show();
+  $("#attrTableDiv").show();
+  
 }
 
 function GetAttr(selectedDB, selectedRel){
@@ -90,175 +94,77 @@ function GetAttr(selectedDB, selectedRel){
     },
     success:function(response){
       attrList = JSON.parse(response);
-      UpdateAttrList();
+      UpdateAttrList(attrList);
     }
   })
 }
 
-$(document).ready(function() {
-  $("#FromWrapper").hide();
-  x = 1;
-  $("#attributesTable").hide();
+$(document).ready(function(){
+  $("#attrTableDiv").hide();
+  
   GetDBList();
+  
   $("#select_db").change(function(){
     selectedDB = $(this).find("option:selected").text();
-    GetRelList(selectedDB, 1);
+    GetRelList(selectedDB);
+    // HideAttrTable();
   })
+  
   $("#select_rel").change(function(){
     selectedDB = $("#select_db").find("option:selected").text();
     selectedRel = $(this).find("option:selected").text();
     GetAttr(selectedDB, selectedRel);
   })
+  
 })
 
-function EmptyAll(){
-  $('#select_rel').html('');
-  $("#attributesTable").hide();
-  GetDBList();
-}
-
-
-
-function AddRel(){
-  x = x + 1;
+function Update(){
+  var attr = [];
   
-  var SelRel = document.createElement('div');
-  SelRel.className = "form-group";
-  SelRel.id = x + 1000;
-
-  var dropDown = document.createElement('select');
-  dropDown.className = 'form-control';
-  dropDown.id = x;  
-
-  var attrForm = document.createElement('form');
-  attrForm.id = "form" + x;
-  var inp = document.createElement('input');
-  inp.setAttribute('type', 'text');
-  inp.setAttribute('id', 'attrList'+x);
-
-  // SelRel.innerHTML = dropDown;
-  document.getElementById('AllRelContainer').appendChild(SelRel);
-  document.getElementById(x+1000).appendChild(dropDown);
-  document.getElementById(x+1000).appendChild(attrForm);
-  document.getElementById('form'+x).appendChild(inp);
-  
-  UpdateRelList(x);
-}
-
-
-function getAttrList(){
-  var y = x;
-  var i = 1;
-  // alert(y);
-  compiled_list = []; 
-  for (i=1; i<=y; i++){
-    var a_list = document.getElementById("attrList"+i).value;
-    alert(a_list);
-    //This regex removes whitespaces, if any in attrlist.  
-    a_list = a_list.replace(/\s/g, "");      
+  $('#addAttr tr').each(function(){
+    var colName = ($(this).find(".colName")).html();
+    // var colType = ($(this).find(".colType")).html();
+    var colVal = ($(this).find(".colVal")).val();
     
-    // Gives a list of attributes
-    a_list = a_list.split(",");
-    var e = document.getElementById(i)
-    var chosen_rel = e.options[e.selectedIndex].text;
-    
-    var list_attr = [];
-    var size = a_list.length;
-    var j = 0;
-    for(j=0; j<size; j++){
-      list_attr[j] = chosen_rel + "." + a_list[j];
-
-    }
-      compiled_list = compiled_list.concat(list_attr);
-      
-  }
-  console.log(compiled_list);
-}
-
-
-function Submit(){
-  getAttrList();
-  // alert(compiled_list.length);
-  $('#FromWrapper tr').each(function(){
-    var isTemp = ($(this).find(".FromList:checked").val());
-
-    var isTemp1 = ($(this).find(".relNameCheckBox").val());
-
-    var isTemp2 = ($(this).find(".relNameCheckBox").html());
-
-    console.log("---------");
-    console.log(isTemp,isTemp2);
-    // if (isTemp==1)
-    //   alert(isTemp);
-    //   alert(isTempValue);
-
-      
-  })
-}
-
-function FromCondition(){
- for (var i = 0; i < relList.length; i++) {
-      var isTemp = '<td><input type="checkbox" class="FromList" value="' + 1 + '"></td><td class="relNameCheckBox">' + relList[i] + '</td>';
-    $('#FromWrapper').append("<tr>" + isTemp + "</tr>");  
-  }
-  $("#FromWrapper").show();
-}
-
-function Temporalize(){
-  var tempo = 0;
-  var table_data = []; //list of list containing isTemp and colName
-  $('#addAttr tr').each(function() {
-    var isTemp = ($(this).find(".temp:checked").val());
-    console.log(isTemp, typeof(isTemp));
-    if(isTemp=="on"){
-      isTemp=1;
-      tempo+=1;
-    }
-    else{
-      isTemp=0;
-    }
-    
-    var attrName = ($(this).find(".colName").html())//.toString();
-    var attrType = ($(this).find(".colType").html());
-    if(attrName!="")
-      table_data.push([isTemp, attrName, attrType]);
+    if(colVal!='')
+      attr.push([colName, colVal]);
   })
   
-  console.log(table_data);
-  if(tempo==0){
-    swal('', 'No col selected for temporalizing', 'error');
-    return;
-  }
-  
-  data = {};
+  var data = {};
   data.dbName = selectedDB;
   data.relName = selectedRel;
-  data.attributes = table_data;
+  data.attrVal = attr;  
+  var whereVal = $("#whereClause").val();
+  var additionalQueryVal  = $("#additionalQuery").val();
+  
+  data.where = whereVal;
+  data.additionalQuery = additionalQueryVal;
+  
   console.log(data);
   
   $.ajax({
     type: "POST",
-    url: "temp_rel/",
-    // contentType: "application/json",
+    url: "updateQuery/",
+    async: false,
     data: {
       'data': JSON.stringify(data)
     },
-    async: false,
-    // dataType:'text',
-    success: function(response) {
-      console.log(response, typeof(response));
-      if (response == "1") {
-        swal('Done', 'Table created.', 'success');
-      } else if (response == "-1") {
-        swal('Duplication detected for this relations', 'Contact admin for further queries', 'error');
-      } else if(response == "0") {
-        swal('Given attribute(s) already temporalized', 'Duplication detected for this attribute', 'success');
+    success: function(resp){
+      console.log(resp, typeof(resp));
+      if(resp=="1"){
+        swal({ title: "Updation Successful", icon: "success"}).then(function(){
+          location.reload();
+        });
+      } else if(resp=="0"){
+        swal("Something went wrong", "Please check the query again", "error");
       } else {
-        swal('Something went wrong', 'we will get back to you later', 'error');
+        swal("Something went wrong", "We will get back to you later", "error");
       }
-      EmptyAll();
+    },
+    error(err){
+      alert(err);
     }
   })
   
+  console.log(selectedRel);
 }
-
