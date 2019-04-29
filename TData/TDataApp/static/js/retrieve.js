@@ -241,7 +241,7 @@ function AddRel(){
 function getAttrList(){
   var y = x;
   var i = 1;
-  // alert(y);
+  
   compiled_list = []; 
   for (i=1; i<=y; i++){
     var a_list = document.getElementById("attrList"+i).value;
@@ -268,62 +268,41 @@ function getAttrList(){
 }
 
 
-function Submit(){
+function Retrieve(){
   getAttrList();
+  checkedRel = [];
   // alert(compiled_list.length);
   $('#FromWrapper tr').each(function(){
     var isTemp = ($(this).find(".FromList:checked").val());
     var isTemp2 = ($(this).find(".relNameCheckBox").html());
 
     console.log("---------");
-    console.log(isTemp,isTemp2);
-      
-  })
-}
 
-function FromCondition(){
- for (var i = 0; i < relList.length; i++) {
-      var isTemp = '<td><input type="checkbox" class="FromList" value="' + 1 + '"></td><td class="relNameCheckBox">' + relList[i] + '</td>';
-    $('#FromWrapper').append("<tr>" + isTemp + "</tr>");  
-  }
-  $("#FromWrapper").show();
-}
-
-function Temporalize(){
-  var tempo = 0;
-  var table_data = []; //list of list containing isTemp and colName
-  $('#addAttr tr').each(function() {
-    var isTemp = ($(this).find(".temp:checked").val());
-    console.log(isTemp, typeof(isTemp));
-    if(isTemp=="on"){
-      isTemp=1;
-      tempo+=1;
+    if(isTemp=="1"){
+      checkedRel.push(isTemp2);
     }
-    else{
-      isTemp=0;
-    }
-    
-    var attrName = ($(this).find(".colName").html())//.toString();
-    var attrType = ($(this).find(".colType").html());
-    if(attrName!="")
-      table_data.push([isTemp, attrName, attrType]);
   })
+  // console.log(checkedRel);
   
-  console.log(table_data);
-  if(tempo==0){
-    swal('', 'No col selected for temporalizing', 'error');
-    return;
-  }
+  var whereVal = $("#whereClause").val();
+  var additionalQueryVal  = $("#additionalQuery").val();
+
+  // console.log(whereVal);
+  // console.log(additionalQueryVal);
   
-  data = {};
+  data = {}
   data.dbName = selectedDB;
-  data.relName = selectedRel;
-  data.attributes = table_data;
+  data.relName = checkedRel;
+  data.selAttr = compiled_list;
+  data.where = whereVal;
+  data.additionalQuery = additionalQueryVal;
+
   console.log(data);
-  
+
+
   $.ajax({
     type: "POST",
-    url: "temp_rel/",
+    url: "retrieveData/",
     // contentType: "application/json",
     data: {
       'data': JSON.stringify(data)
@@ -344,6 +323,73 @@ function Temporalize(){
       EmptyAll();
     }
   })
-  
+
+
 }
+
+function FromCondition(){
+ for (var i = 0; i < relList.length; i++) {
+      var isTemp = '<td><input type="checkbox" class="FromList" value="' + 1 + '"></td><td class="relNameCheckBox">' + relList[i] + '</td>';
+    $('#FromWrapper').append("<tr>" + isTemp + "</tr>");  
+  }
+  $("#FromWrapper").show();
+}
+
+// function Temporalize(){
+//   var tempo = 0;
+//   var table_data = []; //list of list containing isTemp and colName
+//   $('#addAttr tr').each(function() {
+//     var isTemp = ($(this).find(".temp:checked").val());
+//     console.log(isTemp, typeof(isTemp));
+//     if(isTemp=="on"){
+//       isTemp=1;
+//       tempo+=1;
+//     }
+//     else{
+//       isTemp=0;
+//     }
+    
+//     var attrName = ($(this).find(".colName").html())//.toString();
+//     var attrType = ($(this).find(".colType").html());
+//     if(attrName!="")
+//       table_data.push([isTemp, attrName, attrType]);
+//   })
+  
+//   console.log(table_data);
+//   if(tempo==0){
+//     swal('', 'No col selected for temporalizing', 'error');
+//     return;
+//   }
+  
+//   data = {};
+//   data.dbName = selectedDB;
+//   data.relName = selectedRel;
+//   data.attributes = table_data;
+//   console.log(data);
+  
+//   $.ajax({
+//     type: "POST",
+//     url: "temp_rel/",
+//     // contentType: "application/json",
+//     data: {
+//       'data': JSON.stringify(data)
+//     },
+//     async: false,
+//     // dataType:'text',
+//     success: function(response) {
+//       console.log(response, typeof(response));
+//       if (response == "1") {
+//         swal('Done', 'Table created.', 'success');
+//       } else if (response == "-1") {
+//         swal('Duplication detected for this relations', 'Contact admin for further queries', 'error');
+//       } else if(response == "0") {
+//         swal('Given attribute(s) already temporalized', 'Duplication detected for this attribute', 'success');
+//       } else {
+//         swal('Something went wrong', 'we will get back to you later', 'error');
+//       }
+//       EmptyAll();
+//     }
+//   })
+  
+// }
 
