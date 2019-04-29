@@ -16,6 +16,9 @@ urlpatterns = [
     url(r'get_attrList/$', views.GetAttrList, name="GetAttrList"),
     url(r'temp_rel/$', views.TempRel, name="TemporalizeQuery"),
     
+    #update
+    url(r'updateQuery/$', views.UpdateQuery, name="UpdateQuery"),
+    
     #admin
     url(r'get_sql/$', views.GetSql, name="GetSql"),
     url(r'exec_query/$', views.ExecQuery, name="ExecuteQuery"),

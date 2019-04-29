@@ -35,14 +35,12 @@ def GetAttrFromRel(dbFolder, dbName, relName): # helper.GetAttrFromRel()
     return attrList
 
 def GetPK(dbFolder, dbName, relName): # helper.MakeTemp()
-    print("-"*10)
     curs = (CreateConnToExternalDB(dbFolder, dbName)).cursor()
     result = curs.execute("PRAGMA table_info('%s')" % relName).fetchall()
     for r in result:
         if(r[5]==1):
             print(r[1])
             return (r[1], r[2])
-    print("-"*10)
     
 def ExecuteQuery(dbFolder, dbName, query): # helper.ExecQuery()
     curs = (CreateConnToExternalDB(dbFolder, dbName)).cursor()
@@ -260,23 +258,23 @@ def DeleteQuery(dbFolder, dbFullName, relNames, where, additionalQuery): #helper
         pkColType.append(pkCol[1])
         
     pkColList = ", ".join(pkColType)
-    sql_insert = "SELECT "
+    sql_select = "SELECT "
     pkList = ", ".join(pk)
-    sql_insert += pkList
-    sql_insert += " FROM "
+    sql_select += pkList
+    sql_select += " FROM "
     relList = ", ".join(relNames)
-    sql_insert += relList
+    sql_select += relList
     if(where!=""):
-        sql_insert += " WHERE "+where
-    sql_insert += ";"
+        sql_select += " WHERE "+where
+    sql_select += ";"
     
-    print(sql_insert)
+    print(sql_select)
     
     tempRels = GetTempRel(dbFolder, dbFullName, relList)
     try:
         conn = CreateConnToExternalDB(dbFolder, dbFullName)
         curs = conn.cursor()
-        curs.execute(sql_insert)
+        curs.execute(sql_select)
         
         for val in curs.fetchall():
             pkVal.append(val[0])
@@ -324,3 +322,83 @@ def DeleteQuery(dbFolder, dbFullName, relNames, where, additionalQuery): #helper
         return 0
     return 1
     
+def UpdateQuery(dbFolder, dbFullName, relName, attrVal, where, additionalQuery): #helper.UpdateQuery
+    print("*"*50)
+    dateNow = datetime.datetime.now()
+    today = dateNow.strftime("%Y-%m-%d")
+    
+    colName = []
+    colType = []
+    colVal = []
+    
+    print(dbFolder, dbFullName, relName, attrVal, where, additionalQuery)
+    
+    pk = GetPK(dbFolder, dbFullName, relName)
+    pkName = pk[0]
+    pkType = pk[1]
+    
+    sql = ""
+    
+    valStrList = []
+    tempAttr = []
+    
+    dbName = (dbFullName.split("."))[0]
+    n = len(attrVal)
+    
+    pkVal = [] 
+    if(where!=""):
+        sql_select = "SELECT "+pk[0]+" FROM "+relName+" WHERE "+where+";"
+        try:
+            conn = CreateConnToExternalDB(dbFolder, dbFullName)
+            curs = conn.cursor()
+            curs.execute(sql_select)
+        
+            for val in curs.fetchall():
+                pkVal.append(val[0])
+            
+            print(pkVal)
+        except Exception as e:
+            print(e)
+            return 0
+    
+    
+    for attr in attrVal:
+        if(attr[1].upper()=="TEXT"):
+            attr[2] = "'"+attr[2]+"'"
+        valStrList.append(attr[0]+"="+attr[2])
+        
+        attrTableName = "hist_"+dbName+"_"+relName+"_"+attr[0]
+        if(AttrAlreadyTemp(dbFolder, dbFullName, attrTableName)):
+            tempAttr.append(attr)
+    
+    if(pkType.upper()=="TEXT"):
+        for val in pkVal:
+            val = "'"+pkVal+"'"
+    print(pkVal)
+    
+    valStr = ", ".join(valStrList)
+    sql = "UPDATE "+relName+" SET "+valStr
+    if(where!=""):
+        sql += " WHERE "+where
+    sql += ";"
+
+    for attr in tempAttr:
+        for val in pkVal:
+            tempRelName = "hist_"+dbName+"_"+relName+"_"+attr[0]
+            sql += "UPDATE "+tempRelName+" SET ed_"+attr[0]+" = '"+today+"' WHERE "+pk[0]+" = "+str(val)+" AND ed_"+attr[0]+" IS NULL;"
+            sql += "INSERT INTO "+tempRelName+" ("+pk[0]+", sd_"+attr[0]+", "+attr[0]+") VALUES ("+str(val)+", '"+today+"', "+str(attr[2])+");"
+    
+    print(sql)
+    
+    try:
+        conn = CreateConnToExternalDB(dbFolder, dbFullName)
+        curs = conn.cursor()
+        for query in sql.split(";"):
+            curs.execute(query)
+        conn.commit()
+        conn.close()
+    except Error as e:
+        conn.rollback()
+        print(e)
+        return 0
+    return 1

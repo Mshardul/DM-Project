@@ -120,20 +120,19 @@ function Update(){
   
   $('#addAttr tr').each(function(){
     var colName = ($(this).find(".colName")).html();
-    // var colType = ($(this).find(".colType")).html();
+    var colType = ($(this).find(".colType")).html();
     var colVal = ($(this).find(".colVal")).val();
     
     if(colVal!='')
-      attr.push([colName, colVal]);
+      attr.push([colName, colType, colVal]);
   })
+  var whereVal = $("#whereClause").val();
+  var additionalQueryVal  = $("#additionalQuery").val();
   
   var data = {};
   data.dbName = selectedDB;
   data.relName = selectedRel;
-  data.attrVal = attr;  
-  var whereVal = $("#whereClause").val();
-  var additionalQueryVal  = $("#additionalQuery").val();
-  
+  data.attrVal = attr;
   data.where = whereVal;
   data.additionalQuery = additionalQueryVal;
   

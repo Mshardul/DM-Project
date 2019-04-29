@@ -232,3 +232,8 @@ def DeleteQuery(dbName, relNames, where, additionalQuery): #views.DeleteQuery()
     # additionalRel = RemoveRecurringRel(relNames, additionalRel)
     x = dbAccess.DeleteQuery(dbFolder, dbName, relNames, where, additionalQuery)
     return x
+    
+def UpdateQuery(dbName, relName, attrVal, where, additionalQuery): #views.UpdateQuery
+    dbFolder = GetDBFolder()
+    x = dbAccess.UpdateQuery(dbFolder, dbName, relName, attrVal, where, additionalQuery)
+    return x

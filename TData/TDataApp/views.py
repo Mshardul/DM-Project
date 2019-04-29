@@ -149,3 +149,22 @@ def DeleteQuery(request):
 	
 	x=helper.DeleteQuery(dbName, relNames, where, additionalQuery)
 	return HttpResponse(x)
+	
+# --------------> update
+@csrf_exempt
+def UpdateQuery(request):
+	data = json.loads(request.POST['data'])
+	
+	dbName = data['dbName']
+	relName = data['relName']
+	attrVal = data['attrVal']
+	where = data['where'].strip()
+	additionalQuery = data['additionalQuery'].strip()
+	
+	print(dbName, relName, attrVal, where, additionalQuery)
+	
+	if(len(relName)==0):
+		return 1
+	x = helper.UpdateQuery(dbName, relName, attrVal, where, additionalQuery)
+	
+	return HttpResponse(x)
