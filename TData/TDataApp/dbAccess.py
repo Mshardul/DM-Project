@@ -373,7 +373,7 @@ def UpdateQuery(dbFolder, dbFullName, relName, attrVal, where, additionalQuery):
     
     if(pkType.upper()=="TEXT"):
         for val in pkVal:
-            val = "'"+pkVal+"'"
+            val = "'"+val+"'"
     print(pkVal)
     
     valStr = ", ".join(valStrList)
