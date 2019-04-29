@@ -285,7 +285,7 @@ function Retrieve(){
   // console.log(checkedRel);
   
   var whereVal = $("#whereClause").val();
-  var additionalQueryVal  = $("#additionalQuery").val();
+  // var additionalQueryVal  = $("#additionalQuery").val();
 
   // console.log(whereVal);
   // console.log(additionalQueryVal);
@@ -295,7 +295,7 @@ function Retrieve(){
   data.relName = checkedRel;
   data.selAttr = compiled_list;
   data.where = whereVal;
-  data.additionalQuery = additionalQueryVal;
+  // data.additionalQuery = additionalQueryVal;
 
   console.log(data);
 
