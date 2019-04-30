@@ -184,7 +184,7 @@ def MakeTemp(dbName, relName, attrList): # views.TempRel()
     x = 0
     print("*"*10)
     for attr in attrList:
-        print attr
+        print(attr)
         if(attr[0]==1):
             attrName = str(attr[1])
             attrType = str(attr[2])

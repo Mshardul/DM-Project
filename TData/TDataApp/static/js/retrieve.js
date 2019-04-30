@@ -192,14 +192,14 @@ function Retrieve(){
   })
   
   var whereVal = $("#whereClause").val();
-  var additionalQueryVal  = $("#additionalQuery").val();
+  // var additionalQueryVal  = $("#additionalQuery").val();
 
   data = {}
   data.dbName = selectedDB;
   data.relName = checkedRel;
   data.selAttr = compiled_list;
   data.where = whereVal;
-  data.additionalQuery = additionalQueryVal;
+  // data.additionalQuery = additionalQueryVal;
 
   console.log(data);
 

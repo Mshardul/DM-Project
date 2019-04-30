@@ -97,6 +97,7 @@ def GetTempData(dbFolder, dbName, relName, attrs): # helper.ExecQuery()
     return 1
 
 def InsertQuery(dbFolder, dbFullName, relName, attrVal): #helper.InsertQuery()
+    print("*"*10)
     dateNow = datetime.datetime.now()
     today = dateNow.strftime("%Y-%m-%d")
     
@@ -120,8 +121,8 @@ def InsertQuery(dbFolder, dbFullName, relName, attrVal): #helper.InsertQuery()
         if(attr[0]==pk[0]):
             pkVal = attr[2]
     
-    if(pk[1].upper()=="TEXT"):
-        pkVal = "'"+pkVal+"'"
+    # if(pk[1].upper()=="TEXT"):
+        # pkVal = "'"+pkVal+"'"
         
     print(tempAttr)
     print(today, pk, pkVal)
@@ -371,9 +372,9 @@ def UpdateQuery(dbFolder, dbFullName, relName, attrVal, where, additionalQuery):
         if(AttrAlreadyTemp(dbFolder, dbFullName, attrTableName)):
             tempAttr.append(attr)
     
-    if(pkType.upper()=="TEXT"):
-        for val in pkVal:
-            val = "'"+pkVal+"'"
+    # if(pkType.upper()=="TEXT"):
+        # for val in pkVal:
+            # val = "'"+val+"'"
     print(pkVal)
     
     valStr = ", ".join(valStrList)
