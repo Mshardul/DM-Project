@@ -7,6 +7,27 @@
 {% block pageTitle %}Readme{% endblock %}
 
 {% block pageContent %}
+
+<div class="row">
+  <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+    <div id="t1">
+      <table class="table" id="t1">
+        <thead><tr><td>Things to look out for, in <b>Temporal Retrieve</b></td></tr></thead>
+        <tbody>
+          <tr><td>1. We have used natural join for non-temporal tables, as all those tables have primary key to link them.</td></tr>
+          <tr><td>2. Date format is yyyy-mm-dd.</td></tr>
+          <tr><td>3. Use quotes ('' or "") for all the values that should be of TEXT data type, including date.</td></tr>
+          <tr><td>4. "AS OF" uses &le and &lt. "AS OF (Range)" uses SQLite BETWEEN query.</td></tr>
+          <tr><td>5. "Show History" takes value of primary key as input. Please use quotes if it is of TEXT data type.</td></tr>
+          <tr><td>6. "Show Next" and "Show Previous" take comma separated value of primary key and attribute as input.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<br><hr><br>
+
 <div class="row">
   <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
     <div id="t1">

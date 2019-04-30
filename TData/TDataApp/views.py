@@ -52,6 +52,11 @@ def Update(request):
 def Delete(request):
 	return render_to_response('delete.html')
 
+def RetrieveTemp(request):
+	return render_to_response('retrieveTemp.html')
+
+def Query(request):
+	return render_to_response('query.html')
 
 ''' controllers '''
 # --------------> temporalize
@@ -168,3 +173,27 @@ def UpdateQuery(request):
 	x = helper.UpdateQuery(dbName, relName, attrVal, where, additionalQuery)
 	
 	return HttpResponse(x)
+
+# --------------> retrieve
+@csrf_exempt
+def GetTempAttrList(request):
+	dbName = json.loads(request.POST.get('dbName'))
+	relName = json.loads(request.POST.get('relName'))
+	if(dbName==None or relName==None):
+		return HttpResponse(0)
+	attrList = helper.GetTempAttrFromRel(dbName, relName)
+	return HttpResponse(json.dumps(attrList))
+	
+@csrf_exempt
+def RetrieveTempQuery(request):
+	data = json.loads(request.POST['data'])
+	
+	print(data)
+	dbName = data['dbName']
+	relName = data['relName']
+	tempRelList = data['attributes']
+	query = data['query']
+	val = data['val']
+	print(dbName, relName, tempRelList, query, val)
+	x = helper.ExecRetrieveTemp(dbName, relName, tempRelList, query, val)
+	return HttpResponse(json.dumps(x))

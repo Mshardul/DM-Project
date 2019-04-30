@@ -4,6 +4,7 @@ var attrList = [];
 
 var selectedDB;
 var selectedRel;
+var selectedQuery;
 
 function UpdateDBList(){
   console.log(dbList.length);
@@ -69,8 +70,7 @@ function UpdateAttrList(){
   val = 0
   for(var attr in attrList){
     str+='<tr><td><input type="checkbox" class="temp" val="'+val+'"></td>';
-    str+='<td class="colName">'+attrList[attr][0]+'</td>';
-    str+='<td class="colType">'+attrList[attr][1]+'</td></tr>';
+    str+='<td class="colName">'+attrList[attr]+'</td></tr>';
   }
   
   console.log(str);
@@ -80,7 +80,7 @@ function UpdateAttrList(){
 function GetAttr(selectedDB, selectedRel){
   $.ajax({
     type: "POST",
-    url: "get_attrList/",
+    url: "get_tempAttrList/",
     async: false,
     data: {
       'dbName': JSON.stringify(selectedDB),
@@ -105,14 +105,16 @@ $(document).ready(function() {
     selectedRel = $(this).find("option:selected").text();
     GetAttr(selectedDB, selectedRel);
   })
+  $("#select_temp_query").change(function(){
+    selectedQuery = $(this).find("option:selected").val();
+  })
 })
 
-function Temporalize(){
+function Retrieve(){
   var tempo = 0;
   var table_data = []; //list of list containing isTemp and colName
   $('#addAttr tr').each(function() {
     var isTemp = ($(this).find(".temp:checked").val());
-    console.log(isTemp, typeof(isTemp));
     if(isTemp=="on"){
       isTemp=1;
       tempo+=1;
@@ -122,26 +124,30 @@ function Temporalize(){
     }
     
     var attrName = ($(this).find(".colName").html())//.toString();
-    var attrType = ($(this).find(".colType").html());
-    if(attrName!="")
-      table_data.push([isTemp, attrName, attrType]);
+    if(isTemp==1)
+      table_data.push(attrName);
   })
   
+  console.log("----");
   console.log(table_data);
   if(tempo==0){
-    swal('', 'No col selected for temporalizing', 'error');
+    swal('', 'No col selected for retrieval', 'error');
     return;
   }
+  
+  var tempQueryVal = $("#tempQueryVal").val();
   
   data = {};
   data.dbName = selectedDB;
   data.relName = selectedRel;
   data.attributes = table_data;
+  data.query = selectedQuery;
+  data.val = tempQueryVal;
   console.log(data);
   
   $.ajax({
     type: "POST",
-    url: "temp_rel/",
+    url: "ret_temp/",
     // contentType: "application/json",
     data: {
       'data': JSON.stringify(data)
@@ -150,18 +156,47 @@ function Temporalize(){
     // dataType:'text',
     success: function(response) {
       console.log(response, typeof(response));
-      if (response == "1") {
-        swal('Done', 'Table created.', 'success');
-      } else if (response == "-1") {
-        swal('Duplication detected for this relations', 'Contact admin for further queries', 'error');
-      } else if(response == "0") {
-        swal('Given attribute(s) already temporalized', 'Duplication detected for this attribute', 'success');
-      } else {
-        swal('Something went wrong', 'we will get back to you later', 'error');
+      data = JSON.parse(response);
+      
+      var head = data.head;
+      var body = data.body;
+      console.log(head);
+      console.log(body);
+      
+      var populateTableHead = "<tr>";
+      var populateTableBody = "";
+      
+      for(var i in head){
+        if(i!=0){
+          populateTableHead+="<td colspan='3' style='text-align:center;'>"+head[i]+"</td>";
+        }
+        else {
+          populateTableHead+="<td>"+head[i]+"</td>";
+        }
       }
-      EmptyAll();
+      populateTableHead+="</tr>";
+      console.log(populateTableHead);
+      
+      for(var i in body){
+        populateTableBody+="<tr>";
+        console.log(i, body[i]);
+        for(var j in body[i]){
+          populateTableBody += "<td>"+body[i][j]+"</td>"
+        }
+        populateTableBody+="</tr>";
+      }
+      
+      console.log(populateTableBody);
+      
+      $("#outputTableHead").html(populateTableHead);
+      $("#outputTableBody").html(populateTableBody);
+      $("#outputDiv").show();
+      if (response == "0") {
+        swal('Something went wrong', 'we will get back to you later', 'error');
+      } else {
+        swal("done", "", "success");
+      }
     }
   })
   
 }
-

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+  {% block pageTitle %}Temporalize Operation{% endblock %}
+  
+  {% block pageContent %}
+  <script type="text/javascript" src="{% static "js/retrieveTemp.js" %}"></script>
+  
+  <div class="row">
+    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+      <form>
+        {% csrf_token %}
+        <br>
+        <div class="form-group" id="dbDiv">
+          <label for="db_name">Select DataBase:</label>
+          <select class="form-control" id="select_db"></select>
+          <br>
+        </div>
+        <hr>
+        <div class="form-group" id="relDiv">
+          <label for="select rel">Select Relation</label>
+          <select class="form-control" id="select_rel"></select>
+          <br>
+        </div>
+        <hr>
+        <div class="form-group" id="attrTableDiv">
+          <table class="table" style="border: 5px solid grey" id="attributesTable">
+            <thead>
+              <tr>
+                <td>Retrieve</td>
+                <td>Attribute Name</td>
+              </tr>
+            </thead>
+            <tbody id="addAttr"></tbody>
+          </table>
+        </div>
+        <div class="form-group" id="tempQueryDiv">
+          <label for="temp queries">Select Temporlize Query</label>
+          <select class="form-control" id="select_temp_query">
+            <option value="-1" disabled selected>---Select Temporalize Query---</option>
+            <option value="1">AS OF &ltyyyy-mm-dd&gt</option>
+            <option value="2">AS OF (range) &ltyyyy-mm-dd&gt,&ltyyyy-mm-dd&gt</option>
+            <option value="3">Show History</option>
+            <option value="4">Show Next</option>
+            <option value="5">Show Previous</option>
+          </select>
+          <br>
+          <label for="temp query val">Insert Value</label>
+          <input type="text" id="tempQueryVal" class="form-control">
+        </div>
+        <hr>
+        <input type="button" value="Retrieve" style="float:right" onClick="Retrieve()">
+        <br>
+        <br>
+      </form>
+    </div>
+  </div>
+  
+  <div class="row" id="outputDiv" hidden>
+    <div class="col-md-offset-2 col-md-8" style="border: 5px solid gray">
+      <table class="table">
+        <thead id="outputTableHead"></thead>
+        <tbody id="outputTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  {% endblock %}
+
+</html>

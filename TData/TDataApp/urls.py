@@ -4,6 +4,10 @@ from . import views
 
 urlpatterns = [    
     
+    #retrieve
+    url(r'get_tempAttrList/$', views.GetTempAttrList, name="GetTempAttrList"),
+    url(r'ret_temp/$', views.RetrieveTempQuery, name="RetrieveTempQuery"),
+    
     #delete
     url(r'deleteQuery/$', views.DeleteQuery, name="DeleteQuery"),
     
@@ -34,11 +38,12 @@ urlpatterns = [
     url(r'upload/$', views.Upload, name="UploadOperation"),
     url(r'create/$', views.Create, name="CreateOperation"),
     url(r'makeTemp/$', views.Temporalize, name="Temporalize"),
-    url(r'retrieve/$', views.Retrieve, name="RetrieveOperation"),
+    url(r'retrieveTemp/$', views.RetrieveTemp, name="RetrieveTempOperation"),
     url(r'insert/$', views.Insert, name="InsertOperation"),
     url(r'readme/$', views.Readme, name="Readme"),
     url(r'update/$', views.Update, name="UpdateOperation"),
     url(r'delete/$', views.Delete, name="DeleteOperation"),
+    url(r'query/$', views.Query, name="QueryOperation"),
     url(r'', views.Home, name="homepage"),
     
     #not using anymore

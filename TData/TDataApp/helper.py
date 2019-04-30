@@ -237,3 +237,14 @@ def UpdateQuery(dbName, relName, attrVal, where, additionalQuery): #views.Update
     dbFolder = GetDBFolder()
     x = dbAccess.UpdateQuery(dbFolder, dbName, relName, attrVal, where, additionalQuery)
     return x
+    
+def GetTempAttrFromRel(dbName, relName): #views.GetTempAttrList()
+    dbFolder = GetDBFolder()
+    x = dbAccess.GetTempRel(dbFolder, dbName, relName)
+    return x
+    
+def ExecRetrieveTemp(dbName, relName, tempRelList, query, val): #views.RetrieveTempQuery()
+    dbFolder = GetDBFolder()
+    x = dbAccess.ExecRetrieveTemp(dbFolder, dbName, relName, tempRelList, query, val)
+    print(x)
+    return x

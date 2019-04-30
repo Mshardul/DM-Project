@@ -148,7 +148,7 @@ def InsertQuery(dbFolder, dbFullName, relName, attrVal): #helper.InsertQuery()
         return 0
     return 1
     
-def GetTempRel(dbFolder, dbFullName, relName):
+def GetTempRel(dbFolder, dbFullName, relName): #helper.GetTempAttrFromRel()
     ret = []
     relList = GetRelFromDB(dbFolder, dbFullName)
     dbName = dbFullName.split(".")[0]
@@ -403,3 +403,106 @@ def UpdateQuery(dbFolder, dbFullName, relName, attrVal, where, additionalQuery):
         print(e)
         return 0
     return 1
+    
+def GetED(dbFolder, dbFullName, tempRel, pk, pkVal, attrVal):
+    attr = tempRel.split("_")[-1]
+    dbName = dbFullName.split(".")[0]
+    sql = "SELECT ed_"+attr+" FROM "+tempRel+" WHERE "+pk+" = "+pkVal+" AND "+attr+" = "+attrVal
+    try:
+        conn = CreateConnToExternalDB(dbFolder, dbFullName)
+        curs = conn.cursor()
+        curs.execute(sql)
+        x = curs.fetchone()
+        conn.commit()
+        conn.close()
+        if(x==None):
+            return None
+        return x[0]
+    except Error as e:
+        conn.rollback()
+        print(e)
+        return 0
+        
+def GetSD(dbFolder, dbFullName, tempRel, pk, pkVal, attrVal):
+    attr = tempRel.split("_")[-1]
+    dbName = dbFullName.split(".")[0]
+    sql = "SELECT sd_"+attr+" FROM "+tempRel+" WHERE "+pk+" = "+pkVal+" AND "+attr+" = "+attrVal
+    try:
+        conn = CreateConnToExternalDB(dbFolder, dbFullName)
+        curs = conn.cursor()
+        curs.execute(sql)
+        x = curs.fetchone()
+        conn.commit()
+        conn.close()
+        if(x==None):
+            return None
+        return x[0]
+    except Error as e:
+        conn.rollback()
+        print(e)
+        return 0
+    
+def ExecRetrieveTemp(dbFolder, dbFullName, relName, tempRelList, query, val):
+    sql = "SELECT "
+    pk = GetPK(dbFolder, dbFullName, relName)
+    
+    query_col = [tempRelList[0]+"."+pk[0]]
+    sd_cols = []
+    ed_cols = []
+    cols = [pk[0]]
+    for tempRel in tempRelList:
+        tempAttr = tempRel.split("_")[-1]
+        col = [tempRel+".sd_"+tempAttr, tempRel+"."+tempAttr, tempRel+".ed_"+tempAttr]
+        sd_cols.append(tempRel+".sd_"+tempAttr)
+        cols.append(tempAttr)
+        ed_cols.append(tempRel+".ed_"+tempAttr)
+        query_col.extend(col)
+    
+    sql += ", ".join(query_col)
+    
+    sql += " FROM "
+    sql += " NATURAL JOIN ".join(tempRelList) #not using 'ON' results in full outer join
+    sql += " WHERE "
+    
+    whereClauseList = []
+    if(query=="1"):
+        for i in range(len(sd_cols)):
+            temp = sd_cols[i]+"<="+val+" AND "+ed_cols[i]+">="+val
+            whereClauseList.append(temp)
+    elif(query=="2"):
+        sd_val, ed_val = val.split(",")
+        print(sd_val, ed_val)
+        for i in range(len(sd_cols)):
+            temp = "(("+sd_cols[i]+" BETWEEN "+sd_val+" AND "+ed_val+") OR ("+ed_cols[i]+" BETWEEN "+sd_val+" AND "+ed_val+"))"
+            whereClauseList.append(temp)
+    elif(query=="3"):
+        whereClauseList.append(pk[0]+" = "+val)
+    elif(query=="4"):
+        pkVal, attrVal = val.split(',')
+        sdForNext = GetED(dbFolder, dbFullName, tempRelList[0], pk[0], pkVal, attrVal)
+        whereClauseList.append(sd_cols[0]+" = '"+str(sdForNext)+"'")
+        whereClauseList.append(pk[0]+" = "+pkVal)
+    elif(query=="5"):
+        pkVal, attrVal = val.split(',')
+        edForNext = GetSD(dbFolder, dbFullName, tempRelList[0], pk[0], pkVal, attrVal)
+        whereClauseList.append(ed_cols[0]+" = '"+str(edForNext)+"'")
+        whereClauseList.append(pk[0]+" = "+pkVal)
+    
+    sql += " AND ".join(whereClauseList)
+    print(sql)
+    
+    ret = {}
+    ret['head'] = tuple(cols)
+    try:
+        conn = CreateConnToExternalDB(dbFolder, dbFullName)
+        curs = conn.cursor()
+        for query in sql.split(";"):
+            curs.execute(query)
+        ret['body'] = curs.fetchall()
+        conn.commit()
+        conn.close()
+        return ret
+    except Error as e:
+        conn.rollback()
+        print(e)
+        return 0
